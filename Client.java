@@ -1,11 +1,16 @@
 import java.net.*;
 import java.io.*;
 public class Client {
-    private static final String host = "";    //Put the host name here.
-    private static final int port = ;      //Put the port number here.
-    private static final String nuID = "";     //Put your nuID here.
 
     public static void main(String args[]) throws IOException {
+        if (args.length != 3){
+            System.err.println("Usage: java Client <host name> <port number> <nuID>");
+            System.exit(1);
+        }
+        String host = args[0];
+        int port = Integer.parseInt(args[1]);
+        String nuID = args[2];
+
         // Create the Socket with server.
         Socket serverSocket = new Socket(host, port);
         // Create a PrintWriter to write to Server.
