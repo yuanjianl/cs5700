@@ -90,7 +90,7 @@ public class Client {
             else 
                 out.println("cs5700spring2014 " + getSolution(response));
         }
-        System.out.println("Final response with secret flag: " + response);
+        System.out.println(response.split(" ")[1]);
         // When done, just close the connection and exit
         out.close();
         in.close();
