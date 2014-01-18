@@ -1,5 +1,10 @@
 import java.net.*;
 import java.io.*;
+import javax.net.ssl.*;
+import java.security.cert.X509Certificate;
+import java.security.cert.CertificateException;
+import java.security.*;
+
 public class Client {
 
     private static Socket serverSocket;
@@ -8,10 +13,30 @@ public class Client {
     // Use a BufferedReader to get the response from Server.
     private static BufferedReader in;
 
-    public Client(String host, int port, boolean isSSL) throws IOException {
-        this.serverSocket = new Socket(host, port);
-        this.out = new PrintWriter(serverSocket.getOutputStream(), true);
-        this.in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
+    public Client(String host, int port, boolean isSSL){
+        try {
+            if (isSSL) {
+                    X509TrustManager xtm = new Java2000TrustManager();
+                    TrustManager mytm[] = { xtm };
+        
+                    SSLContext ctx = SSLContext.getInstance("SSL");
+                    ctx.init(null, mytm, null);
+                    SSLSocketFactory factory = ctx.getSocketFactory();
+        
+                    // SSLSocketFactory factory=(SSLSocketFactory) SSLSocketFactory.getDefault();
+                    this.serverSocket = (SSLSocket) factory.createSocket(host, port);
+            } else {
+                this.serverSocket = new Socket(host, port);
+            }
+            this.out = new PrintWriter(serverSocket.getOutputStream(), true);
+            this.in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
+        } catch (NoSuchAlgorithmException e){
+            System.out.println("SSL algorithm is not found!.");
+        } catch (KeyManagementException e) {
+
+        } catch (IOException e){
+
+        }
     }
 
     /**
@@ -45,15 +70,16 @@ public class Client {
     }
 
     public static void main(String args[]) throws IOException{
-        if (args.length != 3){
-            System.err.println("Usage: java Client <host name> <port number> <nuID>");
+        if (args.length != 4){
+            System.err.println("Usage: java Client <host name> <port number> <nuID> <useSSL>");
             System.exit(1);
         }
         String host = args[0];
         int port = Integer.parseInt(args[1]);
         String nuID = args[2];
+        boolean isSSL = Boolean.parseBoolean(args[3]);
 
-        Client client = new Client(host, port, false);
+        Client client = new Client(host, port, isSSL);
 
         out.println("cs5700spring2014 HELLO " + nuID);
         String response;
@@ -70,5 +96,20 @@ public class Client {
         in.close();
         serverSocket.close();
     }
+}
 
+class Java2000TrustManager implements X509TrustManager {
+    Java2000TrustManager() {
+
+    }
+
+    public void checkClientTrusted(X509Certificate chain[], String authType) throws CertificateException {
+    }
+
+    public void checkServerTrusted(X509Certificate chain[], String authType) throws CertificateException {
+    }
+
+    public X509Certificate[] getAcceptedIssuers() {
+        return null;
+    }
 }
