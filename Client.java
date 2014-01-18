@@ -2,36 +2,16 @@ import java.net.*;
 import java.io.*;
 public class Client {
 
-    public static void main(String args[]) throws IOException {
-        if (args.length != 3){
-            System.err.println("Usage: java Client <host name> <port number> <nuID>");
-            System.exit(1);
-        }
-        String host = args[0];
-        int port = Integer.parseInt(args[1]);
-        String nuID = args[2];
+    private static Socket serverSocket;
+    // Use a PrintWriter to write to Server.
+    private static PrintWriter out;
+    // Use a BufferedReader to get the response from Server.
+    private static BufferedReader in;
 
-        // Create the Socket with server.
-        Socket serverSocket = new Socket(host, port);
-        // Create a PrintWriter to write to Server.
-        PrintWriter out = new PrintWriter(serverSocket.getOutputStream(), true);
-        // Create a BufferedReader to get the response from Server.
-        BufferedReader in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
-        out.println("cs5700spring2014 HELLO " + nuID);
-        String response;
-        while (true){
-            response = in.readLine();
-//            System.out.println(response);
-            if (response == null || !response.contains("STATUS"))
-                break;
-            else 
-                out.println(getSolution(response));
-        }
-        System.out.println("Final response with secret flag: " + response);
-        // When done, just close the connection and exit
-        out.close();
-        in.close();
-        serverSocket.close();
+    public Client(String host, int port, boolean isSSL) throws IOException {
+        this.serverSocket = new Socket(host, port);
+        this.out = new PrintWriter(serverSocket.getOutputStream(), true);
+        this.in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
     }
 
     /**
@@ -44,8 +24,7 @@ public class Client {
         int secondOperand = Integer.parseInt(messages[numberOfMessages - 1]);
         String operator = messages[numberOfMessages - 2];
         long result = getResult(firstOperand, operator, secondOperand);
-//        System.out.println(result);
-        return "cs5700spring2014 " + String.valueOf(result);
+        return String.valueOf(result);
     }
 
     /**
@@ -64,4 +43,32 @@ public class Client {
         } 
         return result;
     }
+
+    public static void main(String args[]) throws IOException{
+        if (args.length != 3){
+            System.err.println("Usage: java Client <host name> <port number> <nuID>");
+            System.exit(1);
+        }
+        String host = args[0];
+        int port = Integer.parseInt(args[1]);
+        String nuID = args[2];
+
+        Client client = new Client(host, port, false);
+
+        out.println("cs5700spring2014 HELLO " + nuID);
+        String response;
+        while (true){
+            response = in.readLine();
+            if (response == null || !response.contains("STATUS"))
+                break;
+            else 
+                out.println("cs5700spring2014 " + getSolution(response));
+        }
+        System.out.println("Final response with secret flag: " + response);
+        // When done, just close the connection and exit
+        out.close();
+        in.close();
+        serverSocket.close();
+    }
+
 }
