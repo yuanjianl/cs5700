@@ -13,36 +13,44 @@ public class Client {
     // Use a BufferedReader to get the response from Server.
     private static BufferedReader in;
 
-    public Client(String host, int port, boolean isSSL){
+    private static String MESSAGE_PREFIX = "cs5700fall2014";
+
+    public Client(String host, int port, boolean isSSL) {
         try {
             if (isSSL) {
-                    X509TrustManager xtm = new Java2000TrustManager();
-                    TrustManager mytm[] = { xtm };
-        
-                    SSLContext ctx = SSLContext.getInstance("SSL");
-                    ctx.init(null, mytm, null);
-                    SSLSocketFactory factory = ctx.getSocketFactory();
-        
-                    // SSLSocketFactory factory=(SSLSocketFactory) SSLSocketFactory.getDefault();
-                    this.serverSocket = (SSLSocket) factory.createSocket(host, port);
+                // X509TrustManager xtm = new Java2000TrustManager();
+                // TrustManager mytm[] = { xtm };
+
+                // SSLContext ctx = SSLContext.getInstance("SSL");
+                // ctx.init(null, mytm, null);
+                // SSLSocketFactory factory = ctx.getSocketFactory();
+
+                // SSLSocketFactory factory=(SSLSocketFactory) SSLSocketFactory.getDefault();
+                // this.serverSocket = (SSLSocket) factory.createSocket(host, port);
+
+                
+                // 
+                // 
+                // 
+                System.setProperty("javax.net.ssl.trustStore", "jssecacerts");
+                SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+                SSLSocket socket = (SSLSocket) factory.createSocket(host, port);
+                this.serverSocket = (SSLSocket) socket;
             } else {
                 this.serverSocket = new Socket(host, port);
             }
-            this.out = new PrintWriter(serverSocket.getOutputStream(), true);
-            this.in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
-        } catch (NoSuchAlgorithmException e){
-            System.out.println("SSL algorithm is not found!.");
-        } catch (KeyManagementException e) {
-
-        } catch (IOException e){
-
+            this.out = new PrintWriter(this.serverSocket.getOutputStream(), true);
+            this.in = new BufferedReader(new InputStreamReader(this.serverSocket.getInputStream()));
+        } catch (IOException e) {
+            System.out.println(e);
+            System.out.println("The host cannot be reached");
         }
     }
 
     /**
      * This method returns the solution in STATUS message.
      */
-    private static String getSolution(String response){
+    private static String getSolution(String response) {
         String[] messages = response.split(" ");
         int numberOfMessages = messages.length;
         int firstOperand = Integer.parseInt(messages[numberOfMessages - 3]);
@@ -55,7 +63,7 @@ public class Client {
     /**
      * Given two operands and the operator, this method will return the math result.
      */
-    private static long getResult(int firstOperand, String operator, int secondOperand){
+    private static long getResult(int firstOperand, String operator, int secondOperand) {
         long result = 0;
         if (operator.equals("+")) {
             result = firstOperand + secondOperand;
@@ -65,12 +73,12 @@ public class Client {
             result = firstOperand * secondOperand;
         } else if (operator.equals("/")) {
             result = firstOperand / secondOperand;
-        } 
+        }
         return result;
     }
 
-    public static void main(String args[]) throws IOException{
-        if (args.length != 4){
+    public static void main(String args[]) throws IOException {
+        if (args.length != 4) {
             System.err.println("Usage: java Client <host name> <port number> <nuID> <useSSL>");
             System.exit(1);
         }
@@ -80,36 +88,29 @@ public class Client {
         boolean isSSL = Boolean.parseBoolean(args[3]);
 
         Client client = new Client(host, port, isSSL);
-
-        out.println("cs5700spring2014 HELLO " + nuID);
+        
+        if (out == null) {
+            System.out.println("The socket is not properly set.");
+            System.exit(1);
+        }
+        out.println(MESSAGE_PREFIX + " HELLO " + nuID);
+        out.flush();
         String response;
-        while (true){
+        while (true) {
             response = in.readLine();
+            System.out.println(response);
             if (response == null || !response.contains("STATUS"))
                 break;
-            else 
-                out.println("cs5700spring2014 " + getSolution(response));
+            else {
+                System.out.println(getSolution(response));
+                out.println(MESSAGE_PREFIX + " " + getSolution(response) + "\n");
+                out.flush();
+            }
         }
         System.out.println(response.split(" ")[1]);
         // When done, just close the connection and exit
         out.close();
         in.close();
         serverSocket.close();
-    }
-}
-
-class Java2000TrustManager implements X509TrustManager {
-    Java2000TrustManager() {
-
-    }
-
-    public void checkClientTrusted(X509Certificate chain[], String authType) throws CertificateException {
-    }
-
-    public void checkServerTrusted(X509Certificate chain[], String authType) throws CertificateException {
-    }
-
-    public X509Certificate[] getAcceptedIssuers() {
-        return null;
     }
 }
