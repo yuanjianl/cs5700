@@ -86,7 +86,8 @@ public class Client {
             if (response == null || !response.contains("STATUS"))
                 break;
             else {
-                System.out.println(getSolution(response));
+                // System.out.println(getSolution(response));
+                out.println(MESSAGE_PREFIX + " " + getSolution(response));
             }
         }
         System.out.println(response.split(" ")[1]);
