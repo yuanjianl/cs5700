@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ "$#" = 5 ]
+    then
+    java Client $4 $2 $5 true
+elif [ "$#" = 4 ]
+    then 
+    java Client $3 $2 $4 false
+elif [ "$#" = 3 ]
+    then
+    java Client $2 27994 $3 true
+elif [ "$#" = 2 ]
+    then 
+    java Client $1 27993 $2 false
+else 
+    echo "Invalid arguments! Usage: ./client <-p port> <-s> [hostname] [NEU ID]"
+fi
+
+
