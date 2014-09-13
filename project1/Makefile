@@ -17,9 +17,6 @@ default: Client.class
 Client.class: Client.java
 		$(JCC) $(JFLAGS) Client.java
 
-Java2000TrustManager.class: Client.java
-		$(JCC) $(JFLAGS) Client.java
-
 # To start over from scratch, type 'make clean'.  
 # Removes all .class files, so that the next make rebuilds them
 #

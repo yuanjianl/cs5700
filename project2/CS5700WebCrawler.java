@@ -15,11 +15,11 @@ public class CS5700WebCrawler extends WebCrawler{
         out.println("POST " + "/accounts/login/" + " HTTP/1.1");
         out.println("Host: " + website + "");
         out.println("Cookie: csrftoken=ef5701548275a17c885b1ed15c27dbac; sessionid=c1e3c1d964cc2ee0b14b5b59ab9574c9");
-        out.println("Content-Length: " + content.length());
+        // out.println("Content-Length: " + content.length());
         // out.println("Content-type: application/x-www-form-urlencoded; charset=utf-8");
         out.println("");
         out.flush();
-        Pattern patten = Pattern.compile("Set Cookie: ")
+        Pattern patten = Pattern.compile("Set Cookie: ");
         String content = "csrfmiddlewaretoken=ef5701548275a17c885b1ed15c27dbac&username=" + username + "&password=" + password + "&next=/fakebook/";
         out.println("POST " + "/accounts/login/" + " HTTP/1.1");
         out.println("Host: " + website + "");
