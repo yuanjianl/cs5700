@@ -4,7 +4,7 @@ JCC = javac
 	$(JCC) $*.java
 
 CLASSES = \
-	CS5700WebCrawler.java
+	WebCrawler.java
 
 default: classes
 
