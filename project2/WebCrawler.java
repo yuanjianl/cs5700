@@ -19,7 +19,7 @@ public class WebCrawler {
     private static final String COOKIE_PATTERN = "Set-Cookie: csrftoken=(\\w{32}+)";
     private static final String SESSIONID_PATTERN = "Set-Cookie: sessionid=(\\w{32}+)";
     private static final String A_HREF_PATTERN = "<a\\s.*?href=\"(/fakebook[^\"]+)\"[^>]*>(.*?)</a>";
-    private static final String SECRET_FLAG_PATTERN = "<h2 class='secret_flag' style=\"color:red\">FLAG: (\\w{64}+)</h2>";
+    private static final String SECRET_FLAG_PATTERN = "<h2 class=\'secret_flag\' style=\"color:red\">FLAG: (\\w{64}+)</h2>";
 
     private String headerCookie;
 
@@ -58,19 +58,25 @@ public class WebCrawler {
             request(website, visiting, headerCookie, null);
             visitedPages.add(visiting);
             String response = read();
+            System.out.println("The page is: " + visiting + "\n" + response + "\n");
             List<String> flags = matchPattern(response, SECRET_FLAG_PATTERN);
             for (String flag: flags){
-                System.out.println(flag);
-                secretFlags.add(flag);
+               System.out.println(flag);
+               secretFlags.add(flag);
             }
             List<String> hrefs = matchPattern(response, A_HREF_PATTERN);
             for (String href : hrefs){
                 if (!visitedPages.contains(href)){
                     toBeVisitedPages.add(href);
-                    System.out.println("To be visitied: " + href);
+                    // System.out.println("To be visitied: " + href);
                 }
             }
+            System.out.println("To be visited queue size is: " + toBeVisitedPages.size());
         }
+    }
+
+    public String getCookie(){
+        return headerCookie;
     }
 
     /**
