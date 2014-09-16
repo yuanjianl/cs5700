@@ -1,9 +1,9 @@
 import java.net.*;
 import java.io.*;
 import javax.net.ssl.*;
-import java.security.cert.X509Certificate;
-import java.security.cert.CertificateException;
 import java.security.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class Client {
 
@@ -14,6 +14,8 @@ public class Client {
     private static BufferedReader in;
 
     private static String MESSAGE_PREFIX = "cs5700fall2014";
+    private static String STATUS_PATTERN = "cs5700fall2014 STATUS \\d+ [\\+-/*] \\d+";
+    private static String BYE_PATTERN = "cs5700fall2014 \\w{64}+ BYE";
 
     public Client(String host, int port, boolean isSSL) {
         try {
@@ -63,6 +65,15 @@ public class Client {
         return result;
     }
 
+    public static boolean getInfo(String response, String pattern) {
+        Pattern messagePattern = Pattern.compile(pattern);
+        Matcher matcher = messagePattern.matcher(response);
+        if (matcher.find()) {
+            return true;
+        }
+        return false;
+    }
+
     public static void main(String args[]) throws IOException {
         if (args.length != 4) {
             System.err.println("Usage: java Client <host name> <port number> <nuID> <useSSL>");
@@ -74,7 +85,7 @@ public class Client {
         boolean isSSL = Boolean.parseBoolean(args[3]);
 
         Client client = new Client(host, port, isSSL);
-        
+
         if (out == null) {
             System.out.println("The socket is not properly set.");
             System.exit(1);
@@ -83,14 +94,17 @@ public class Client {
         String response;
         while (true) {
             response = in.readLine();
-            if (response == null || !response.contains("STATUS"))
-                break;
-            else {
-                // System.out.println(getSolution(response));
+            if (getInfo(response, STATUS_PATTERN)) {
                 out.println(MESSAGE_PREFIX + " " + getSolution(response));
+                continue;
+            } else if (getInfo(response, BYE_PATTERN)) {
+                System.out.println(response.split(" ")[1]);
+            } else {
+                System.out.println("Message pattern not right.");
             }
+            break;
         }
-        System.out.println(response.split(" ")[1]);
+
         // When done, just close the connection and exit
         out.close();
         in.close();
