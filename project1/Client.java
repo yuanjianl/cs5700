@@ -98,7 +98,7 @@ public class Client {
                 System.out.println("The server closes the connection.");
                 break;
             }
-            
+
             if (getInfo(response, STATUS_PATTERN)) {
                 out.println(MESSAGE_PREFIX + " " + getSolution(response));
                 continue;

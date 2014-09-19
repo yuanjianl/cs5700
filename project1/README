@@ -1,0 +1,5 @@
+####README for [Project1](http://david.choffnes.com/classes/cs4700fa14/project1.php)####
+
+The work house of this project is *Client.java*. The program is very simple and easy to understand. It first initilizes the system by creating the socket and wrapping the input output stream to *PrintWrite* and *BufferReader*, respectively. Then the program sends out a hello message and wait for the challenges. After finishing all the challenges from server, the program will wait for the secret flag and then exit. We used a pattern matcher to check if the messages are in a good format to make sure that corrupted messages won't crash the program.
+
+The major chanllenge we come across was the extra point SSL implementation. We first tried *X509TrustManager*, but it seems simply bypass all SSL configuration. Then we find this [solution](https://blogs.oracle.com/gc/entry/unable_to_find_valid_certification) that uses a program to read and configure for the SSL server. We downloaded it and run it to get this file *jssecacerts*, then use a System.setProperty() method in the program for configuration. Then the SSL version works like a charm.
