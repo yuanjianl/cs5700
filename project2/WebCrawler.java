@@ -48,7 +48,8 @@ public class WebCrawler {
         if (response == null || response.isEmpty()) {
             System.out.println("Response is null");
             return true;
-        } else if (response.equals("\n") || response.equals("0\n")) {
+        } else if (response.equals("\n") || response.equals("0\n") || response.equals("null")) {
+            System.out.println("Jian Ren");
             return true;
         } else if (matchPattern(response, ERROR_500).size() != 0) {
             System.out.println("Server throws a 500 error code.");
@@ -71,9 +72,9 @@ public class WebCrawler {
             // System.out.println(visiting);
             request(website, visiting, headerCookie, null);
             String response = read();
-            System.out.println("The page is: " + visiting + "\n" + response + "\n");
+            // System.out.println("The page is: " + visiting + "\n" + response + "\n");
 
-            connectToServer();
+            // connectToServer();
             // If server throws a 500 error, reconnect to server and retry the current url.
             if (error(response)) {
                 connectToServer();
@@ -85,9 +86,8 @@ public class WebCrawler {
             // Sucessfully visited the page, add to visitedPages.
             visitedPages.add(visiting);
 
-            List<String> flags = matchPattern(response, OPTIONAL_FLAG_PATTER);
+            List<String> flags = matchPattern(response, SECRET_FLAG_PATTERN);
             for (String flag : flags) {
-                System.out.println(flag);
                 secretFlags.add(flag);
             }
             List<String> hrefs = matchPattern(response, A_HREF_PATTERN);
@@ -98,6 +98,10 @@ public class WebCrawler {
                 }
             }
             System.out.println("To be visited queue size is: " + toBeVisitedPages.size() + ". And secret flag is: " + secretFlags.size());
+        }
+
+        for (String flag : flags){
+            System.out.println(flag);
         }
     }
 
