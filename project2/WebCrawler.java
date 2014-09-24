@@ -100,7 +100,7 @@ public class WebCrawler {
             System.out.println("To be visited queue size is: " + toBeVisitedPages.size() + ". And secret flag is: " + secretFlags.size());
         }
 
-        for (String flag : flags){
+        for (String flag : secretFlags){
             System.out.println(flag);
         }
     }
