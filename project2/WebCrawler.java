@@ -8,11 +8,22 @@ import java.util.regex.Pattern;
 public class WebCrawler {
     public String website;
     private Socket socket;
+    private String headerCookie;
+
+    // To prevent loop, we use a set to hold all visited pages.
     private Set<String> visitedPages = new HashSet<String>();
+
+    // We use this deque to hold all pages need to be visited. We choose
+    // Deque instead of Queue because when server shuts down the connection, 
+    // we can recover it and push the current page to the head of the queue.
     private Deque<String> toBeVisitedPages = new LinkedList<String>();
+
+    // Secret flags should be unique.
     private Set<String> secretFlags = new HashSet<String>();
+
     // Use a PrintWriter to write to Server.
     private PrintWriter out;
+    
     // Use a BufferedReader to get the response from Server.
     private BufferedReader in;
 
@@ -20,16 +31,17 @@ public class WebCrawler {
     private static final String SESSIONID_PATTERN = "Set-Cookie: sessionid=(\\w{32}+)";
     private static final String A_HREF_PATTERN = "<a\\s.*?href=\"(/fakebook[^\"]+)\"[^>]*>(.*?)</a>";
     private static final String SECRET_FLAG_PATTERN = "<h2 class=\'secret_flag\' style=\"color:red\">FLAG: (\\w{64}+)</h2>";
-    private static final String OPTIONAL_FLAG_PATTER = "(secret_flag)";
     private static final String ERROR_500 = "(500 INTERNAL SERVER ERROR)";
-
-    private String headerCookie;
 
     public WebCrawler(String website) {
         this.website = website;
         connectToServer();
     }
 
+    /**
+     * Whenever the connection is closed. Use this to reconnect with server.
+     * @return True if the connection is built. False otherwise.
+     */
     public boolean connectToServer() {
         try {
             this.socket = new Socket(InetAddress.getByName(website), 80);
@@ -44,12 +56,17 @@ public class WebCrawler {
         return false;
     }
 
+    /**
+     * All errors in process of crawling should be handled here.
+     * @param  response [description]
+     * @return          [description]
+     */
     public boolean error(String response) {
         if (response == null || response.isEmpty()) {
             System.out.println("Response is null");
             return true;
         } else if (response.equals("\n") || response.equals("0\n") || response.equals("null")) {
-            System.out.println("Jian Ren");
+            System.out.println("Response is null string");
             return true;
         } else if (matchPattern(response, ERROR_500).size() != 0) {
             System.out.println("Server throws a 500 error code.");
@@ -59,25 +76,33 @@ public class WebCrawler {
             return true;
         }
 
-        // System.out.println("Socket status: " + socket.isConnected());
-
         return false;
     }
 
+    /**
+     * Used a BFS to crawl the website. 
+     * @param path [description]
+     */
     public void start(String path) {
+        // Put the first page into queue.
         toBeVisitedPages.add(path);
 
+        // If finished crawling or found all 5 flags.
         while (!toBeVisitedPages.isEmpty() && secretFlags.size() < 5) {
             String visiting = toBeVisitedPages.poll();
-            // System.out.println(visiting);
             request(website, visiting, headerCookie, null);
             String response = read();
             // System.out.println("The page is: " + visiting + "\n" + response + "\n");
 
-            // connectToServer();
             // If server throws a 500 error, reconnect to server and retry the current url.
             if (error(response)) {
                 connectToServer();
+                
+                // If we cannot recover the socket, close the program.
+                if (socket.isClosed()){
+                    System.out.println("Encounting an unrecoverble error, exiting.");
+                    System.exit(1);
+                }
                 // Put the current url to the head of the list.
                 toBeVisitedPages.addFirst(visiting);
                 continue;
@@ -86,10 +111,13 @@ public class WebCrawler {
             // Sucessfully visited the page, add to visitedPages.
             visitedPages.add(visiting);
 
+            // If found the flags, put in flags set.
             List<String> flags = matchPattern(response, SECRET_FLAG_PATTERN);
             for (String flag : flags) {
                 secretFlags.add(flag);
             }
+
+            // Put newly found pages into queue.
             List<String> hrefs = matchPattern(response, A_HREF_PATTERN);
             for (String href : hrefs) {
                 if (!visitedPages.contains(href)) {
@@ -97,9 +125,10 @@ public class WebCrawler {
                     // System.out.println("To be visitied: " + href);
                 }
             }
-            System.out.println("To be visited queue size is: " + toBeVisitedPages.size() + ". And secret flag is: " + secretFlags.size());
+            // System.out.println("To be visited queue size is: " + toBeVisitedPages.size() + ". And secret flag is: " + secretFlags.size());
         }
 
+        // When finished, print out all 5 flags.
         for (String flag : secretFlags){
             System.out.println(flag);
         }
