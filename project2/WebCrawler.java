@@ -35,6 +35,7 @@ public class WebCrawler {
     private static final String ERROR_301 = "(301 Moved Permanently)";
     private static final String ERROR_403 = "(403 Forbidden)";
     private static final String MESSAGE_200 = "(200 OK)";
+    private static final String INVALID_USERNAME_OR_PASSWORD = "(Please enter a correct username and password. Note that both fields are case-sensitive.)";
 
     public WebCrawler(String website) {
         this.website = website;
@@ -53,6 +54,7 @@ public class WebCrawler {
             return true;
         } catch (UnknownHostException e) {
             System.out.println("The host is not known!");
+            System.exit(1);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -66,22 +68,22 @@ public class WebCrawler {
      */
     public int message(String response) {
         if (response == null || response.isEmpty()) {
-            System.out.println("Response is null");
+            // System.out.println("Response is null");
             return 800;
         } else if (response.equals("\n") || response.equals("0\n") || response.equals("null")) {
-            System.out.println("Response is null string");
+            // System.out.println("Response is null string");
             return 700;
         } else if (socket.isClosed() || socket.isInputShutdown()) {
-            System.out.println("Socket is closed.");
+            // System.out.println("Socket is closed.");
             return 600;
         } else if (matchPattern(response, ERROR_500).size() != 0) {
-            System.out.println("Server throws a 500 error code.");
+            // System.out.println("Server throws a 500 error code.");
             return 500;
         } else if (matchPattern(response, ERROR_403).size() != 0) {
-            System.out.println("Page is forbidden, discard.");
+            // System.out.println("Page is forbidden, discard.");
             return 403;
         } else if (matchPattern(response, ERROR_301).size() != 0) {
-            System.out.println("Page is removed permanently, fetch the new page.");
+            // System.out.println("Page is removed permanently, fetch the new page.");
             return 301;
         } else if (matchPattern(response, MESSAGE_200).size() != 0) {
             //System.out.println("Page returns with OK messgae.");
@@ -203,6 +205,11 @@ public class WebCrawler {
         String headerCookie = "csrftoken=" + cookie + "; sessionid=" + sessionid;
         request(website, path, headerCookie, data);
         response = read();
+        // System.out.println(response);
+        if (matchPattern(response, INVALID_USERNAME_OR_PASSWORD).size() != 0){
+            System.err.println("Wrong username and/or passwords. Terminating program.");
+            System.exit(1);
+        }
 
         // The server will return a new session_id if login successful.
         sessionid = matchPattern(response, SESSIONID_PATTERN).get(0);
@@ -268,7 +275,7 @@ public class WebCrawler {
 
             crawler.finish();
         } catch (NullPointerException ex) {
-            System.err.println("Null Pointer Exception. Exiting");
+            System.err.println("Null Pointer Exception. Terminating");
             ex.printStackTrace();
         }
     }
