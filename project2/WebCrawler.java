@@ -31,10 +31,10 @@ public class WebCrawler {
     private static final String SESSIONID_PATTERN = "Set-Cookie: sessionid=(\\w{32}+)";
     private static final String A_HREF_PATTERN = "<a\\s.*?href=\"(/fakebook[^\"]+)\"[^>]*>(.*?)</a>";
     private static final String SECRET_FLAG_PATTERN = "<h2 class=\'secret_flag\' style=\"color:red\">FLAG: (\\w{64}+)</h2>";
-    private static final String ERROR_500 = "500 INTERNAL SERVER ERROR";
-    private static final String ERROR_301 = "301 Moved Permanently";
-    private static final String ERROR_403 = "403 Forbidden";
-    private static final String MESSAGE_200 = "200 OK";
+    private static final String ERROR_500 = "(500 INTERNAL SERVER ERROR)";
+    private static final String ERROR_301 = "(301 Moved Permanently)";
+    private static final String ERROR_403 = "(403 Forbidden)";
+    private static final String MESSAGE_200 = "(200 OK)";
 
     public WebCrawler(String website) {
         this.website = website;
@@ -119,7 +119,7 @@ public class WebCrawler {
                 // Put the current url to the head of the list.
                 toBeVisitedPages.addFirst(visiting);
                 continue;
-            } else if (message = 403) {
+            } else if (message == 403) {
                 // If server returns reponse with error 403, just abandon the URL.
                 continue;
             }
@@ -192,6 +192,7 @@ public class WebCrawler {
         // Initial GET request to /accounts/login/.
         request(website, path, null, null);
         String response = read();
+        System.out.println(response);
 
         // POST request to /accounts/login/ to log in for cookie and sessionid.
         String cookie = matchPattern(response, COOKIE_PATTERN).get(0);
