@@ -124,50 +124,49 @@ public class WebCrawler {
             String response = read();
             // System.out.println("The page is: " + visiting + "\n" + response + "\n");
 
+            int message = message(response);
             // If server throws a 500 error, reconnect to server and retry the current url.
-            if (error(response)) {
-                int message = message(response);
-                if (message >= 500 || message < 0) {
-                    connectToServer();
 
-                    // If we cannot recover the socket, close the program.
-                    if (socket.isClosed()) {
-                        System.out.println("Encounting an unrecoverble error, exiting.");
-                        System.exit(1);
-                    }
-                    // Put the current url to the head of the list.
-                    toBeVisitedPages.addFirst(visiting);
-                    continue;
-                } else if (message == 403) {
-                    // If server returns reponse with error 403, just abandon the URL. Before that, we want to put it in the visited pages so that we won't visit it again.
-                    visitedPages.add(visiting);
-                    continue;
+            if (message >= 500 || message < 0) {
+                connectToServer();
+
+                // If we cannot recover the socket, close the program.
+                if (socket.isClosed()) {
+                    System.out.println("Encounting an unrecoverble error, exiting.");
+                    System.exit(1);
                 }
-
-                // Sucessfully visited the page, add to visitedPages.
+                // Put the current url to the head of the list.
+                toBeVisitedPages.addFirst(visiting);
+                continue;
+            } else if (message == 403) {
+                // If server returns reponse with error 403, just abandon the URL. Before that, we want to put it in the visited pages so that we won't visit it again.
                 visitedPages.add(visiting);
-
-                // If found the flags, put in flags set.
-                List<String> flags = matchPattern(response, SECRET_FLAG_PATTERN);
-                for (String flag : flags) {
-                    secretFlags.add(flag);
-                }
-
-                // Put newly found pages into queue.
-                List<String> hrefs = matchPattern(response, A_HREF_PATTERN);
-                for (String href : hrefs) {
-                    if (!visitedPages.contains(href)) {
-                        toBeVisitedPages.add(href);
-                        // System.out.println("To be visitied: " + href);
-                    }
-                }
-                // System.out.println("To be visited queue size is: " + toBeVisitedPages.size() + ". And secret flag is: " + secretFlags.size());
+                continue;
             }
 
-            // When finished, print out all 5 flags.
-            for (String flag : secretFlags) {
-                System.out.println(flag);
+            // Sucessfully visited the page, add to visitedPages.
+            visitedPages.add(visiting);
+
+            // If found the flags, put in flags set.
+            List<String> flags = matchPattern(response, SECRET_FLAG_PATTERN);
+            for (String flag : flags) {
+                secretFlags.add(flag);
             }
+
+            // Put newly found pages into queue.
+            List<String> hrefs = matchPattern(response, A_HREF_PATTERN);
+            for (String href : hrefs) {
+                if (!visitedPages.contains(href)) {
+                    toBeVisitedPages.add(href);
+                    // System.out.println("To be visitied: " + href);
+                }
+            }
+            // System.out.println("To be visited queue size is: " + toBeVisitedPages.size() + ". And secret flag is: " + secretFlags.size());
+
+        }
+        // When finished, print out all 5 flags.
+        for (String flag : secretFlags) {
+            System.out.println(flag);
         }
     }
 
