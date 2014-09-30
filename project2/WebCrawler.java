@@ -250,6 +250,9 @@ public class WebCrawler {
         if (args.length != 4) {
             System.err.println("Usage: java WebCrawler <host name> <path> <username> <passsword>");
             System.exit(1);
+        } else if (!args[0].equals("cs5700f14.ccs.neu.edu")) {
+            System.err.println("Connecting the wrong server");
+            System.exit(1);
         }
         String website = args[0];
         String path = args[1];
