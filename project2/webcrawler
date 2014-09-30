@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ "$#" = 2 ]
+    then 
+    java WebCrawler cs5700f14.ccs.neu.edu /fakebook/ $1 $2
+else 
+    echo "Invalid arguments! Usage: ./webcrawler [username] [password]"
+fi
+
+
