@@ -14,7 +14,7 @@ public class WebCrawler {
     private Set<String> visitedPages = new HashSet<String>();
 
     // We use this deque to hold all pages need to be visited. We choose
-    // Deque instead of Queue because when server shuts down the connection, 
+    // Deque instead of Queue because when server shuts down the connection,
     // we can recover it and push the current page to the head of the queue.
     private Deque<String> toBeVisitedPages = new LinkedList<String>();
 
@@ -23,7 +23,7 @@ public class WebCrawler {
 
     // Use a PrintWriter to write to Server.
     private PrintWriter out;
-    
+
     // Use a BufferedReader to get the response from Server.
     private BufferedReader in;
 
@@ -32,6 +32,9 @@ public class WebCrawler {
     private static final String A_HREF_PATTERN = "<a\\s.*?href=\"(/fakebook[^\"]+)\"[^>]*>(.*?)</a>";
     private static final String SECRET_FLAG_PATTERN = "<h2 class=\'secret_flag\' style=\"color:red\">FLAG: (\\w{64}+)</h2>";
     private static final String ERROR_500 = "(500 INTERNAL SERVER ERROR)";
+    private static final String ERROR_301 = "(301 Moved Permanently)";
+    private static final String ERROR_403 = "(403 Forbidden)";
+    private static final String MESSAGE_200 = "(200 OK)";
 
     public WebCrawler(String website) {
         this.website = website;
@@ -71,7 +74,7 @@ public class WebCrawler {
         } else if (matchPattern(response, ERROR_500).size() != 0) {
             System.out.println("Server throws a 500 error code.");
             return true;
-        } else if (socket.isClosed() || socket.isInputShutdown()){
+        } else if (socket.isClosed() || socket.isInputShutdown()) {
             System.out.println("Socket is closed.");
             return true;
         }
@@ -79,8 +82,35 @@ public class WebCrawler {
         return false;
     }
 
+    public int message(String response) {
+        if (response == null || response.isEmpty()) {
+            System.out.println("Response is null");
+            return 800;
+        } else if (response.equals("\n") || response.equals("0\n") || response.equals("null")) {
+            System.out.println("Response is null string");
+            return 700;
+        } else if (socket.isClosed() || socket.isInputShutdown()) {
+            System.out.println("Socket is closed.");
+            return 600;
+        } else if (matchPattern(response, ERROR_500).size() != 0) {
+            System.out.println("Server throws a 500 error code.");
+            return 500;
+        } else if (matchPattern(response, ERROR_403).size() != 0) {
+            System.out.println("Page is forbidden, discard.");
+            return 403;
+        } else if (matchPattern(response, ERROR_301).size() != 0) {
+            System.out.println("Page is removed permanently, fetch the new page.");
+            return 301;
+        } else if (matchPattern(response, MESSAGE_200).size() != 0) {
+            //System.out.println("Page returns with OK messgae.");
+            return 200;
+        }
+
+        return -1;
+    }
+
     /**
-     * Used a BFS to crawl the website. 
+     * Used a BFS to crawl the website.
      * @param path [description]
      */
     public void start(String path) {
@@ -96,41 +126,48 @@ public class WebCrawler {
 
             // If server throws a 500 error, reconnect to server and retry the current url.
             if (error(response)) {
-                connectToServer();
-                
-                // If we cannot recover the socket, close the program.
-                if (socket.isClosed()){
-                    System.out.println("Encounting an unrecoverble error, exiting.");
-                    System.exit(1);
+                int message = message(response);
+                if (message >= 500 || message < 0) {
+                    connectToServer();
+
+                    // If we cannot recover the socket, close the program.
+                    if (socket.isClosed()) {
+                        System.out.println("Encounting an unrecoverble error, exiting.");
+                        System.exit(1);
+                    }
+                    // Put the current url to the head of the list.
+                    toBeVisitedPages.addFirst(visiting);
+                    continue;
+                } else if (message == 403) {
+                    // If server returns reponse with error 403, just abandon the URL. Before that, we want to put it in the visited pages so that we won't visit it again.
+                    visitedPages.add(visiting);
+                    continue;
                 }
-                // Put the current url to the head of the list.
-                toBeVisitedPages.addFirst(visiting);
-                continue;
-            }
 
-            // Sucessfully visited the page, add to visitedPages.
-            visitedPages.add(visiting);
+                // Sucessfully visited the page, add to visitedPages.
+                visitedPages.add(visiting);
 
-            // If found the flags, put in flags set.
-            List<String> flags = matchPattern(response, SECRET_FLAG_PATTERN);
-            for (String flag : flags) {
-                secretFlags.add(flag);
-            }
-
-            // Put newly found pages into queue.
-            List<String> hrefs = matchPattern(response, A_HREF_PATTERN);
-            for (String href : hrefs) {
-                if (!visitedPages.contains(href)) {
-                    toBeVisitedPages.add(href);
-                    // System.out.println("To be visitied: " + href);
+                // If found the flags, put in flags set.
+                List<String> flags = matchPattern(response, SECRET_FLAG_PATTERN);
+                for (String flag : flags) {
+                    secretFlags.add(flag);
                 }
-            }
-            // System.out.println("To be visited queue size is: " + toBeVisitedPages.size() + ". And secret flag is: " + secretFlags.size());
-        }
 
-        // When finished, print out all 5 flags.
-        for (String flag : secretFlags){
-            System.out.println(flag);
+                // Put newly found pages into queue.
+                List<String> hrefs = matchPattern(response, A_HREF_PATTERN);
+                for (String href : hrefs) {
+                    if (!visitedPages.contains(href)) {
+                        toBeVisitedPages.add(href);
+                        // System.out.println("To be visitied: " + href);
+                    }
+                }
+                // System.out.println("To be visited queue size is: " + toBeVisitedPages.size() + ". And secret flag is: " + secretFlags.size());
+            }
+
+            // When finished, print out all 5 flags.
+            for (String flag : secretFlags) {
+                System.out.println(flag);
+            }
         }
     }
 
@@ -176,6 +213,7 @@ public class WebCrawler {
         // Initial GET request to /accounts/login/.
         request(website, path, null, null);
         String response = read();
+        // System.out.println(response);
 
         // POST request to /accounts/login/ to log in for cookie and sessionid.
         String cookie = matchPattern(response, COOKIE_PATTERN).get(0);
@@ -229,7 +267,7 @@ public class WebCrawler {
         socket.close();
     }
 
-    public static void main(String[] args)  throws IOException {
+    public static void main(String[] args) throws IOException {
         if (args.length != 4) {
             System.err.println("Usage: java WebCrawler <host name> <path> <username> <passsword>");
             System.exit(1);
@@ -240,15 +278,18 @@ public class WebCrawler {
         String password = args[3];
 
 
+        try {
+            WebCrawler crawler = new WebCrawler(website);
 
-        WebCrawler crawler = new WebCrawler(website);
+            crawler.login("/accounts/login/", username, password);
 
-        crawler.login("/accounts/login/", username, password);
+            crawler.start(path);
 
-        crawler.start(path);
-
-        crawler.finish();
-
+            crawler.finish();
+        } catch (NullPointerException ex) {
+            System.err.println("Null Pointer Exception. Exiting");
+            ex.printStackTrace();
+        }
     }
 
 
