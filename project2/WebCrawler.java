@@ -64,24 +64,6 @@ public class WebCrawler {
      * @param  response [description]
      * @return          [description]
      */
-    public boolean error(String response) {
-        if (response == null || response.isEmpty()) {
-            System.out.println("Response is null");
-            return true;
-        } else if (response.equals("\n") || response.equals("0\n") || response.equals("null")) {
-            System.out.println("Response is null string");
-            return true;
-        } else if (matchPattern(response, ERROR_500).size() != 0) {
-            System.out.println("Server throws a 500 error code.");
-            return true;
-        } else if (socket.isClosed() || socket.isInputShutdown()) {
-            System.out.println("Socket is closed.");
-            return true;
-        }
-
-        return false;
-    }
-
     public int message(String response) {
         if (response == null || response.isEmpty()) {
             System.out.println("Response is null");
