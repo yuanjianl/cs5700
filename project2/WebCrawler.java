@@ -218,14 +218,26 @@ public class WebCrawler {
         String headerCookie = "csrftoken=" + cookie + "; sessionid=" + sessionid;
         request(website, path, headerCookie, data);
         response = read();
-        // System.out.println(response);
+        // System.out.println("response22: "+response);
+
         if (matchPattern(response, INVALID_USERNAME_OR_PASSWORD).size() != 0){
             System.err.println("Wrong username and/or passwords. Terminating program.");
             System.exit(1);
         }
 
         // The server will return a new session_id if login successful.
-        sessionid = matchPattern(response, SESSIONID_PATTERN).get(0);
+        List<String> matchResult = matchPattern(response, SESSIONID_PATTERN);
+        // Try to reconnect with the server if login fails for the first time;
+        if (matchResult.size() == 0){
+            request(website, path, headerCookie, data);
+            response = read();
+            matchResult = matchPattern(response, SESSIONID_PATTERN);
+        } 
+        if (matchResult.size() == 0){
+            System.err.println("Login fails by the server. Terminating.");
+            System.exit(1);
+        } 
+        sessionid = matchResult.get(0);
 
         // This header cookie should be used
         this.headerCookie = "csrftoken=" + cookie + "; sessionid=" + sessionid;
