@@ -140,6 +140,9 @@ public class WebCrawler {
             // Put newly found pages into queue.
             List<String> hrefs = matchPattern(response, A_HREF_PATTERN);
             for (String href : hrefs) {
+                if (isOuterLink(href)){
+                    continue;
+                }
                 if (!visitedPages.contains(href)) {
                     toBeVisitedPages.add(href);
                     // System.out.println("To be visitied: " + href);
@@ -152,6 +155,16 @@ public class WebCrawler {
         for (String flag : secretFlags) {
             System.out.println(flag);
         }
+    }
+
+    /**
+     * The outerlink should have "http" or "https" in the href.
+     * @param  href [description]
+     * @return      [description]
+     */
+    private boolean isOuterLink(String href){
+        href = href.toLowerCase();
+        return href.contains("http");
     }
 
     public String getCookie() {
