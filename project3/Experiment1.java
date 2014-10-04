@@ -18,7 +18,7 @@ public class Experiment1 extends Experiment {
     private int totalPacketSent;
     private int totalPacketDropped;
 
-    // For latency, I used a float[] to hold all sent time. The init value is -1;
+    // For latency, I used a float[] to hold all sent time. The init value is -1.0f;
     private float[] tcp_packet_sent_time;
     private double total_latency;
     private int total_received_tcp_at_3;
@@ -123,6 +123,7 @@ public class Experiment1 extends Experiment {
         }
 
         total_latency = 0.0;
+        total_received_tcp_at_3 = 0;
     }
 
     public void start() {
