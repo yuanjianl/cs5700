@@ -6,22 +6,29 @@ public class Experiment1 extends Experiment {
     private String[] TCP_KIND = {"Tahoe", "Reno", "NewReno", "Vegas"};
     private int[] CBR_RATE = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
+    // Variables for recording.
+
+    private int i = TCP_KIND.length;
+    private int j = CBR_RATE.length;
+    private float[][] throughputs = new float[j][i];
+    private float[][] delays = new float[j][i];
+    private float[][] dropRates = new float[j][i];
+
     // Variables for calculating.
 
     // For throughput, I used the packet received at the end node to calculate.
-    private int left_to_right_bytes;
-    private int right_to_left_bytes;
+    private int total_bytes;
 
     // For drop rate, I simply use the largest global packet number as the
     // total number of sent packet. The number of dropped packet are calculated
     // as number of d.
     private int totalPacketSent;
     private int totalPacketDropped;
+    private int totalPacketReceived;
 
     // For latency, I used a float[] to hold all sent time. The init value is -1.0f;
     private float[] tcp_packet_sent_time;
-    private double total_latency;
-    private int total_received_tcp_at_3;
+    private float total_latency;
 
     public Experiment1() {
         initAllCalculatingValues();
@@ -30,16 +37,14 @@ public class Experiment1 extends Experiment {
     protected void getFeed(String line) {
         String[] trace = line.split(" ");
 
-        int globalPacketNumber = Integer.parseInt(trace[trace.length - 1]);
-        if ( globalPacketNumber > totalPacketSent ) {
-            totalPacketSent = globalPacketNumber;
-        }
         String messageType = trace[MESSAGE_TYPE];
-        if ( messageType.equals(DROPPED) ) {
+        if ( messageType.equals(DROPPED) && trace[PACKET_TYPE].equals(TCP)) {
             totalPacketDropped += 1;
         }
         // If it's a DEQUEUED message at node 0, it is a tcp out packet.
         else if ( messageType.equals(DEQUEUED) && trace[SENDER].equals("0") ) {
+            totalPacketSent += 1;
+
             float time = Float.parseFloat(trace[TIME]);
             int seqNum = Integer.parseInt(trace[trace.length - 2]);
 
@@ -48,54 +53,44 @@ public class Experiment1 extends Experiment {
                 increaseArraySize();
             }
 
-            if (tcp_packet_sent_time[seqNum] == INIT_SENT_TIME){
+            if (tcp_packet_sent_time[seqNum] == INIT_SENT_TIME) {
                 tcp_packet_sent_time[seqNum] = time;
             }
         } else if ( messageType.equals(RECEIVED) ) {
-            if ( trace[RECEIVER].equals("3")) {
-                if ( trace[PACKET_TYPE].equals(TCP) ) {
-                    float time = Float.parseFloat(trace[TIME]);
-                    int seqNum = Integer.parseInt(trace[trace.length - 2]);
-                    
-                    // If the sent time is -1.0, there is an error. Ignore it.
-                    if (tcp_packet_sent_time[seqNum] != INIT_SENT_TIME) {
-                        total_latency += time - tcp_packet_sent_time[seqNum];
-                        total_received_tcp_at_3 += 1;
-                        tcp_packet_sent_time[seqNum] = INIT_SENT_TIME;
-                    }
-                }
+            if ( trace[RECEIVER].equals("0") && trace[PACKET_TYPE].equals(ACK) ) {
+                float time = Float.parseFloat(trace[TIME]);
+                int seqNum = Integer.parseInt(trace[trace.length - 2]);
 
-                left_to_right_bytes += Integer.parseInt(trace[PACKET_SIZE]);
-            } else if (trace[RECEIVER].equals("2") && trace[PACKET_TYPE].equals(CBR)) {
-                left_to_right_bytes += Integer.parseInt(trace[PACKET_SIZE]);
-            } else if ( trace[RECEIVER].equals("0") ) {
-                right_to_left_bytes += Integer.parseInt(trace[PACKET_SIZE]);
+                // If the sent time is -1.0, there is an error. Ignore it.
+                if (tcp_packet_sent_time[seqNum] != INIT_SENT_TIME) {
+                    total_latency += time - tcp_packet_sent_time[seqNum];
+                    totalPacketReceived += 1;
+                    total_bytes += 1040;
+                    tcp_packet_sent_time[seqNum] = INIT_SENT_TIME;
+                }
             }
         }
     }
 
-    protected String result() {
-        StringBuilder sb = new StringBuilder();
+    protected void result() {
+        getLostPackets();
 
-        System.out.println("Left to right bytes is: " + left_to_right_bytes);
-        System.out.println("Right to left bytes is: " + right_to_left_bytes);
-        System.out.println("Total Throughput is: " + 8.0 * (left_to_right_bytes + right_to_left_bytes) / (10 * 1000 * 1000) + "Mbps");
+        float throuput = 8.0f * (total_bytes) / (10 * 1000 * 1000);
+        float delay = 1000.0f * total_latency / totalPacketReceived;
+        float dropRate = 100.0f * (totalPacketSent - totalPacketReceived) / totalPacketSent;
 
-        System.out.println("Total Packet Sent is: " + totalPacketSent);
-        System.out.println("Total Packet Dropped is: " + totalPacketDropped);
-        sb.append("The drop rate is: " + 1.0 * totalPacketDropped / totalPacketSent);
-
-        System.out.println("TCP stream latency is: " + total_latency / total_received_tcp_at_3);
-        System.out.println("There are " + getLostPackets() + " lost.");
+        throughputs[j][i] = throuput;
+        delays[j][i] = delay;
+        dropRates[j][i] = dropRate;
 
         initAllCalculatingValues();
-        return sb.toString();
     }
 
-    private int getLostPackets(){
+    private int getLostPackets() {
         int result = 0;
-        for (int i = 0 ; i < tcp_packet_sent_time.length ; i ++){
-            if ( tcp_packet_sent_time[i] != INIT_SENT_TIME ){
+        for (int i = 0 ; i < tcp_packet_sent_time.length ; i ++) {
+            if ( tcp_packet_sent_time[i] != INIT_SENT_TIME ) {
+                total_latency += 10.0f - tcp_packet_sent_time[i];
                 result += 1;
             }
         }
@@ -111,39 +106,65 @@ public class Experiment1 extends Experiment {
     }
 
     protected void initAllCalculatingValues() {
-        left_to_right_bytes = 0;
-        right_to_left_bytes = 0;
+        total_bytes = 0;
 
         totalPacketSent = 0;
         totalPacketDropped = 0;
+        totalPacketReceived = 0;
 
         tcp_packet_sent_time = new float[ESTIMATED_TCP_PACKET_NUMBER];
         for (int i = 0 ; i < tcp_packet_sent_time.length ; i ++) {
             tcp_packet_sent_time[i] = INIT_SENT_TIME;
         }
 
-        total_latency = 0.0;
-        total_received_tcp_at_3 = 0;
+        total_latency = 0.0f;
     }
 
     public void start() {
-        for (int i = 0 ; i < TCP_KIND.length ; i ++) {
-            for (int j = 0; j < CBR_RATE.length ; j++ ) {
-                CBR_RATE[j] = 10;
+        // Execute the script to generate the result files.
+        for (i = 0 ; i < TCP_KIND.length ; i ++) {
+            for (j = 0; j < CBR_RATE.length ; j++ ) {
                 String shellScript = "/course/cs4700f12/ns-allinone-2.35/bin/ns experiment1.tcl " + TCP_KIND[i] + " " + CBR_RATE[j];
                 try {
                     Runtime.getRuntime().exec(shellScript);
-                    Thread.sleep(5000);
                 } catch (IOException ex) {
                     ex.printStackTrace();
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
                 }
-                readFile("my_experimental1_output_" + TCP_KIND[i] + "_" + CBR_RATE[j] + ".tr");
-                break;
             }
-            break;
         }
+
+        // Wait a moment until everything is ready.
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+
+        // Parse the results.
+        for (i = 0 ; i < TCP_KIND.length ; i ++) {
+            for (j = 0; j < CBR_RATE.length ; j++ ) {
+                readFile("my_experimental1_output_" + TCP_KIND[i] + "_" + CBR_RATE[j] + ".tr");
+            }
+        }
+
+        StringBuilder throughputStr = new StringBuilder();
+        StringBuilder delayStr = new StringBuilder();
+        StringBuilder dropRateStr = new StringBuilder();
+
+        for (j = 0 ; j < CBR_RATE.length ; j ++) {
+            for (i = 0 ; i < TCP_KIND.length ; i ++) {
+                throughputStr.append(throughputs[j][i] + " ");
+                delayStr.append(delays[j][i] + " ");
+                dropRateStr.append(dropRates[j][i] + " ");
+            }
+            throughputStr.append("\n");
+            delayStr.append("\n");
+            dropRateStr.append("\n");
+        }
+
+        Experiment.writeToFile("report/Report1_throughput", throughputStr.toString());
+        Experiment.writeToFile("report/Report1_delay", delayStr.toString());
+        Experiment.writeToFile("report/Report1_droprate", dropRateStr.toString());
     }
 
     public static void main(String[] args) {

@@ -4,7 +4,7 @@ JCC = javac
 	$(JCC) $*.java
 
 CLASSES = \
-	WebCrawler.java
+	Experiment1.java Experiment2.java
 
 default: classes
 

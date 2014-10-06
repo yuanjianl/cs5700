@@ -2,12 +2,13 @@
 set ns [new Simulator]
 
 # TCP kind
-set variant [lindex $argv 0]
+set firstTCP [lindex $argv 0]
+set secondTCP [lindex $argv 1]
 # CBR rate
-set rate [lindex $argv 1]
+set rate [lindex $argv 2]
 
 #Open the trace file (before you start the experiment!)
-set tf [open my_experimental1_output_${variant}_${rate}.tr w]
+set tf [open my_experimental2_output_${firstTCP}_${secondTCP}_${rate}.tr w]
 $ns trace-all $tf
 
 # Close the trace file (after you finish the experiment!)
@@ -48,32 +49,55 @@ $cbr set type_ CBR
 $cbr set rate_ ${rate}mb
 
 #Setup a TCP stream between N1 and N4.
-if {$variant eq "Tahoe"} {
-    set tcp [new Agent/TCP]
-} elseif {$variant eq "Reno"} {
-    set tcp [new Agent/TCP/Reno]
-} elseif {$variant eq "NewReno"} {
-    set tcp [new Agent/TCP/Newreno]
-} elseif {$variant eq "Vegas"} {
-    set tcp [new Agent/TCP/Vegas]
+if {$firstTCP eq "Tahoe"} {
+    set tcp1 [new Agent/TCP]
+} elseif {$firstTCP eq "Reno"} {
+    set tcp1 [new Agent/TCP/Reno]
+} elseif {$firstTCP eq "NewReno"} {
+    set tcp1 [new Agent/TCP/Newreno]
+} elseif {$firstTCP eq "Vegas"} {
+    set tcp1 [new Agent/TCP/Vegas]
 }
 #The class is the flow_id in output.
-$tcp set class_ 1
-$ns attach-agent $n1 $tcp
-set sink [new Agent/TCPSink]
-$ns attach-agent $n4 $sink
-$ns connect $tcp $sink
+$tcp1 set class_ 1
+$ns attach-agent $n1 $tcp1
+set sink1 [new Agent/TCPSink]
+$ns attach-agent $n4 $sink1
+$ns connect $tcp1 $sink1
 
 #setup a FTP Application
-set ftp [new Application/FTP]
-$ftp attach-agent $tcp
+set ftp1 [new Application/FTP]
+$ftp1 attach-agent $tcp1
+
+
+#Setup a TCP stream between N1 and N4.
+if {$secondTCP eq "Tahoe"} {
+    set tcp2 [new Agent/TCP]
+} elseif {$secondTCP eq "Reno"} {
+    set tcp2 [new Agent/TCP/Reno]
+} elseif {$secondTCP eq "NewReno"} {
+    set tcp2 [new Agent/TCP/Newreno]
+} elseif {$secondTCP eq "Vegas"} {
+    set tcp2 [new Agent/TCP/Vegas]
+}
+$tcp2 set class_ 2
+$ns attach-agent $n5 $tcp2
+set sink2 [new Agent/TCPSink]
+$ns attach-agent $n6 $sink2
+$ns connect $tcp2 $sink2
+
+#setup a FTP Application
+set ftp2 [new Application/FTP]
+$ftp2 attach-agent $tcp2
 
 
 #Schedule events for the CBR and TCP agents
 $ns at 0.0 "$cbr start"
-$ns at 0.0 "$ftp start"
+$ns at 0.0 "$ftp1 start"
+$ns at 0.0 "$ftp2 start"
 $ns at 10.0 "$cbr stop"
-$ns at 10.0 "$ftp stop"
+$ns at 10.0 "$ftp1 stop"
+$ns at 10.0 "$ftp2 stop"
 
 $ns at 10.0 "finish"
 
@@ -83,10 +107,3 @@ $ns at 10.0 "finish"
 
 #Run the simulation
 $ns run
-
-
-
-
-
-
-

@@ -1,7 +1,9 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 public abstract class Experiment {
 
@@ -16,6 +18,7 @@ public abstract class Experiment {
     // Packet type
     final static String CBR = "cbr";
     final static String TCP = "tcp";
+    final static String ACK = "ack";
 
     final static int MESSAGE_TYPE = 0;
     final static int TIME = 1;
@@ -23,8 +26,9 @@ public abstract class Experiment {
     final static int RECEIVER = 3;
     final static int PACKET_TYPE = 4;
     final static int PACKET_SIZE = 5;
+    final static int FLOW_ID = 7;
 
-    void readFile(String filename){
+    void readFile(String filename) {
         try {
             BufferedReader br = new BufferedReader(new FileReader(filename));
             String line = br.readLine();
@@ -34,7 +38,7 @@ public abstract class Experiment {
                 line = br.readLine();
             }
             br.close();
-            System.out.println(result());
+            result();
         } catch (FileNotFoundException ex) {
             // System.err.println("File not found, terminating.");
             // System.exit(1);
@@ -45,7 +49,19 @@ public abstract class Experiment {
         }
     }
 
+    static void writeToFile(String filename, String content) {
+        try {
+            PrintWriter writer = new PrintWriter(filename, "UTF-8");
+            writer.println(content);
+            writer.close();
+        } catch (FileNotFoundException ex){
+            ex.printStackTrace();
+        } catch (UnsupportedEncodingException ex){
+            ex.printStackTrace();
+        }
+    }
+
     abstract void getFeed(String line);
 
-    abstract String result();
+    abstract void result();
 }
