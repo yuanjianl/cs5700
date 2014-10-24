@@ -5,9 +5,13 @@ set ns [new Simulator]
 set variant [lindex $argv 0]
 # CBR rate
 set rate [lindex $argv 1]
+# TCP start time. For mean and stddev
+set start_time [lindex $argv 2]
+# TCP end time.
+set end_time [lindex $argv 3]
 
 #Open the trace file (before you start the experiment!)
-set tf [open my_experimental1_output_${variant}_${rate}.tr w]
+set tf [open my_experimental1_output_${variant}_${rate}_${start_time}.tr w]
 $ns trace-all $tf
 
 # Close the trace file (after you finish the experiment!)
@@ -71,11 +75,11 @@ $ftp attach-agent $tcp
 
 #Schedule events for the CBR and TCP agents
 $ns at 0.0 "$cbr start"
-$ns at 0.0 "$ftp start"
-$ns at 10.0 "$cbr stop"
-$ns at 10.0 "$ftp stop"
+$ns at ${start_time} "$ftp start"
+$ns at ${end_time} "$ftp stop"
+$ns at 15.0 "$cbr stop"
 
-$ns at 10.0 "finish"
+$ns at 15.0 "finish"
 
 #Print CBR packet size and interval
 # puts "CBR packet size = [$cbr set packet_size_]"

@@ -39,6 +39,7 @@ public abstract class Experiment {
             }
             br.close();
             result();
+            Runtime.getRuntime().exec("rm " + filename);
         } catch (FileNotFoundException ex) {
             // System.err.println("File not found, terminating.");
             // System.exit(1);

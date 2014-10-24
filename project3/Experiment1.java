@@ -4,7 +4,7 @@ import java.lang.InterruptedException;
 public class Experiment1 extends Experiment {
 
     private String[] TCP_KIND = {"Tahoe", "Reno", "NewReno", "Vegas"};
-    private int[] CBR_RATE = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    private float[] CBR_RATE = {5f, 5.5f, 6f, 6.5f, 7f, 7.5f, 8f, 8.5f, 9f, 9.5f, 10f, 10.5f};
 
     // Variables for recording.
 
@@ -120,11 +120,11 @@ public class Experiment1 extends Experiment {
         total_latency = 0.0f;
     }
 
-    public void start() {
+    public void start(String start_time, String end_time) {
         // Execute the script to generate the result files.
         for (i = 0 ; i < TCP_KIND.length ; i ++) {
             for (j = 0; j < CBR_RATE.length ; j++ ) {
-                String shellScript = "/course/cs4700f12/ns-allinone-2.35/bin/ns experiment1.tcl " + TCP_KIND[i] + " " + CBR_RATE[j];
+                String shellScript = "/course/cs4700f12/ns-allinone-2.35/bin/ns experiment1.tcl " + TCP_KIND[i] + " " + CBR_RATE[j] + " " + start_time + " " + end_time;
                 try {
                     Runtime.getRuntime().exec(shellScript);
                 } catch (IOException ex) {
@@ -143,7 +143,7 @@ public class Experiment1 extends Experiment {
         // Parse the results.
         for (i = 0 ; i < TCP_KIND.length ; i ++) {
             for (j = 0; j < CBR_RATE.length ; j++ ) {
-                readFile("my_experimental1_output_" + TCP_KIND[i] + "_" + CBR_RATE[j] + ".tr");
+                readFile("my_experimental1_output_" + TCP_KIND[i] + "_" + CBR_RATE[j] + "_" + start_time + ".tr");
             }
         }
 
@@ -162,13 +162,18 @@ public class Experiment1 extends Experiment {
             dropRateStr.append("\n");
         }
 
-        Experiment.writeToFile("report/Report1_throughput", throughputStr.toString());
-        Experiment.writeToFile("report/Report1_delay", delayStr.toString());
-        Experiment.writeToFile("report/Report1_droprate", dropRateStr.toString());
+        Experiment.writeToFile("report/Report1_throughput_" + start_time, throughputStr.toString());
+        Experiment.writeToFile("report/Report1_delay_" + start_time, delayStr.toString());
+        Experiment.writeToFile("report/Report1_droprate_" + start_time, dropRateStr.toString());
+
     }
 
     public static void main(String[] args) {
         Experiment1 ex1 = new Experiment1();
-        ex1.start();
+        if (args.length != 2) {
+            System.out.println("Usage: java Experiment1 [start_time] [end_time]");
+            System.exit(1);
+        }
+        ex1.start(args[0], args[1]);
     }
 }
