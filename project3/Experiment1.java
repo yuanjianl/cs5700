@@ -62,11 +62,15 @@ public class Experiment1 extends Experiment {
                 int seqNum = Integer.parseInt(trace[trace.length - 2]);
 
                 // If the sent time is -1.0, there is an error. Ignore it.
-                if (tcp_packet_sent_time[seqNum] != INIT_SENT_TIME) {
-                    total_latency += time - tcp_packet_sent_time[seqNum];
-                    totalPacketReceived += 1;
-                    total_bytes += 1040;
-                    tcp_packet_sent_time[seqNum] = INIT_SENT_TIME;
+                try {
+                    if (tcp_packet_sent_time[seqNum] != INIT_SENT_TIME) {
+                        total_latency += time - tcp_packet_sent_time[seqNum];
+                        totalPacketReceived += 1;
+                        total_bytes += 1040;
+                        tcp_packet_sent_time[seqNum] = INIT_SENT_TIME;
+                    }
+                } catch (ArrayIndexOutOfBoundsException ex){
+                    
                 }
             }
         }
