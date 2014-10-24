@@ -5,11 +5,11 @@ import subprocess
 import numpy
 from threading import Thread
 
-TOTAL_RUN = 10
+TOTAL_RUN = 20
 THREAD_COUNT = 2
 
 ROW = 12
-COL = 4
+COL = 0
 data = []
 mean_data = []
 stdev = []
@@ -17,7 +17,7 @@ stdev = []
 
 def getReports(experiment_number, start):
     for i in range(TOTAL_RUN / THREAD_COUNT):
-        start_time = float(( start + i )/20.0)
+        start_time = float(( start + i )/ (100.0 / TOTAL_RUN))
         end_time = start_time + 10
         subprocess.check_output(("java Experiment" + experiment_number + " " + str(start_time) + " " + str(end_time)).split())
 
@@ -65,6 +65,7 @@ def clean_up():
 def write_to_disk(experiment_number, param):
     filename = "report/REPORT%s_%s" % (experiment_number, param)
     file = open (filename, "w")
+    file.write("Total run: " + str(TOTAL_RUN) + " \n")
     for l in mean_data:
         l = [str(x) for x in l]
         file.write(" ".join(l) + "\n")
@@ -80,22 +81,35 @@ def write_to_disk(experiment_number, param):
 
 
 def getResult(experiment_number):
+    global COL
     params = ["delay", "droprate", "throughput"]
     for param in params:
         for i in range(TOTAL_RUN):
-            start_time = i / 20.0;
-            filename = "report/Report%s_%s_%s" % (experiment_number, param, str(start_time))
-            read_into_data(filename, i)
+            start_time = i / (100.0 / TOTAL_RUN);
+            if experiment_number == "1":
+                combinations = [""]
+                COL = 4
+            elif experiment_number == "2":
+                combinations = ["NewReno_Reno", "NewReno_Vegas", "Reno_Reno", "Vegas_Vegas"]
+                COL = 2
+
+            for j in range(len(combinations)):
+                if experiment_number == "1":
+                    suffix = str(start_time)
+                elif experiment_number == "2":
+                    suffix = combinations[j] + "_" + str(start_time)
+                filename = "report/Report%s_%s_%s" % (experiment_number, param, suffix)
+                read_into_data(filename, i)
         # print data
         calculate()
         write_to_disk(experiment_number, param)
         clean_up()
     return 
 
-def main():
+def main(argv):
     threads = []
     for i in range(THREAD_COUNT):
-        thread = Thread(target = getReports, args = (str(1), TOTAL_RUN / THREAD_COUNT * i))
+        thread = Thread(target = getReports, args = (argv[0], TOTAL_RUN / THREAD_COUNT * i))
         thread.start()
         threads.append(thread)
 
@@ -103,7 +117,7 @@ def main():
         thread.join()
     
     
-    getResult(str(1));
+    getResult(argv[0]);
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
