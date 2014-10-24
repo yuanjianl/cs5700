@@ -1,0 +1,20 @@
+# set terminal pngcairo  transparent enhanced font "arial,10" fontscale 1.0 size 512, 280 
+set output 'exp1-t-test.png'
+# set clip two
+# set style fill  transparent solid 0.50 noborder
+set key title "Latency when CBR = 8Mbps"
+set key inside left top vertical Left reverse enhanced autotitles nobox
+set key noinvert samplen 1 spacing 1 width 0 height 0 
+set style function filledcurves y1=0
+set title "Sample T-test curves" 
+set xrange [ 0.0 : 500.0 ] noreverse nowriteback
+set yrange [ 0.00000 : 0.02000 ] noreverse nowriteback
+set terminal png
+unset colorbox
+Gauss(x,mu,sigma) = 1./(sigma*sqrt(2*pi)) * exp( -(x-mu)**2 / (2*sigma**2) )
+d1(x) = Gauss(x, 129.09, 28.58)
+d2(x) = Gauss(x,  377.75,  28.58)
+GPFUN_Gauss = "Gauss(x,mu,sigma) = 1./(sigma*sqrt(2*pi)) * exp( -(x-mu)**2 / (2*sigma**2) )"
+GPFUN_d1 = "d1(x) = Gauss(x, 0.5, 0.5)"
+GPFUN_d2 = "d2(x) = Gauss(x,  2.,  1.)"
+plot d1(x) fs solid 1.0 lc rgb "forest-green" title "Vegas",      d2(x) lc rgb "gold" title "TCP Tahoe"
