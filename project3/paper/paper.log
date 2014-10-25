@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2013.4.9)  24 OCT 2014 23:46
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2013.4.9)  25 OCT 2014 18:50
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -276,7 +276,11 @@ fil }\else \hbox to\hsize {\normalfont \footnotesize \box \@tempboxa \hfil }\fi
  \fi \fi .
 \c@ContinuedFloat=\count105
 Package caption Info: float package is loaded.
-) (./paper.aux)
+) (./paper.aux
+
+LaTeX Warning: Label `red' multiply defined.
+
+)
 \openout1 = `paper.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 10.
@@ -338,16 +342,19 @@ File: plot/exp2-thp-Reno-Reno.png Graphic file (type png)
 File: plot/exp2-dr-Reno-Reno.png Graphic file (type png)
 
 <use plot/exp2-dr-Reno-Reno.png>
+Underfull \vbox (badness 4872) has occurred while \output is active []
+
+
 <plot/exp2-lt-Reno-Reno.png, id=33, 642.4pt x 481.8pt>
 File: plot/exp2-lt-Reno-Reno.png Graphic file (type png)
 
 <use plot/exp2-lt-Reno-Reno.png> [3 <./plot/exp1-t-test.png (PNG copy)> <./imag
 es/top_exp2.png> <./plot/exp2-thp-Reno-Reno.png (PNG copy)> <./plot/exp2-dr-Ren
 o-Reno.png (PNG copy)> <./plot/exp2-lt-Reno-Reno.png (PNG copy)>]
-<plot/exp2-thp-Vegas-Vegas.png, id=42, 642.4pt x 481.8pt>
-File: plot/exp2-thp-Vegas-Vegas.png Graphic file (type png)
+<plot/exp2-lt-Vegas-Vegas.png, id=42, 642.4pt x 481.8pt>
+File: plot/exp2-lt-Vegas-Vegas.png Graphic file (type png)
 
-<use plot/exp2-thp-Vegas-Vegas.png>
+<use plot/exp2-lt-Vegas-Vegas.png>
 <plot/exp2-thp-NewReno-Vegas.png, id=43, 642.4pt x 481.8pt>
 File: plot/exp2-thp-NewReno-Vegas.png Graphic file (type png)
 
@@ -360,6 +367,9 @@ File: plot/exp2-dr-NewReno-Vegas.png Graphic file (type png)
 File: plot/exp2-lt-NewReno-Vegas.png Graphic file (type png)
 
 <use plot/exp2-lt-NewReno-Vegas.png>
+Underfull \vbox (badness 7362) has occurred while \output is active []
+
+
 <plot/exp2-thp-NewReno-Reno.png, id=46, 642.4pt x 481.8pt>
 File: plot/exp2-thp-NewReno-Reno.png Graphic file (type png)
 
@@ -367,30 +377,42 @@ File: plot/exp2-thp-NewReno-Reno.png Graphic file (type png)
 <plot/exp2-dr-NewReno-Reno.png, id=47, 642.4pt x 481.8pt>
 File: plot/exp2-dr-NewReno-Reno.png Graphic file (type png)
 
-<use plot/exp2-dr-NewReno-Reno.png> [4 <./plot/exp2-thp-Vegas-Vegas.png (PNG co
-py)> <./plot/exp2-thp-NewReno-Vegas.png (PNG copy)> <./plot/exp2-dr-NewReno-Veg
-as.png (PNG copy)> <./plot/exp2-lt-NewReno-Vegas.png (PNG copy)>]
+<use plot/exp2-dr-NewReno-Reno.png>
+Underfull \vbox (badness 4108) has occurred while \output is active []
+
+ [4 <./plot/exp2-lt-Vegas-Vegas.png (PNG copy)> <./plot/exp2-thp-NewReno-Vegas.
+png (PNG copy)> <./plot/exp2-dr-NewReno-Vegas.png (PNG copy)> <./plot/exp2-lt-N
+ewReno-Vegas.png (PNG copy)>]
+
+LaTeX Warning: Reference `images/exp3_top' on page 5 undefined on input line 31
+9.
+
 <images/top_exp3.png, id=55, 1439.3775pt x 657.45625pt>
 File: images/top_exp3.png Graphic file (type png)
 
-<use images/top_exp3.png> <plot/exp3-thp.png, id=56, 642.4pt x 481.8pt>
-File: plot/exp3-thp.png Graphic file (type png)
+<use images/top_exp3.png>
+Underfull \hbox (badness 10000) in paragraph at lines 328--329
 
-<use plot/exp3-thp.png>
+ []
+
+<plot/exp3-thp.png, id=56, 642.4pt x 481.8pt>
+File: plot/exp3-thp.png Graphic file (type png)
+ <use plot/exp3-thp.png> [5 <./plot/exp2-thp-NewReno-Reno.png (PNG copy)> <./pl
+ot/exp2-dr-NewReno-Reno.png (PNG copy)> <./images/top_exp3.png>]
 Missing character: There is no â in font ptmr7t!
 Missing character: There is no € in font ptmr7t!
 Missing character: There is no ™ in font ptmr7t!
- [5 <./plot/exp2-thp-NewReno-Reno.png (PNG copy)> <./plot/exp2-dr-NewReno-Reno.
-png (PNG copy)> <./images/top_exp3.png>]
-Missing character: There is no Î in font cmr10!
-Missing character: There is no ± in font cmr10!
+
+Underfull \hbox (badness 10000) in paragraph at lines 349--350
+
+ []
 
 <plot/exp3-lt.png, id=63, 642.4pt x 481.8pt>
 File: plot/exp3-lt.png Graphic file (type png)
  <use plot/exp3-lt.png>
-Missing character: There is no â in font ptmr7t!
-Missing character: There is no € in font ptmr7t!
-Missing character: There is no ™ in font ptmr7t!
+Underfull \hbox (badness 10000) in paragraph at lines 367--368
+
+ []
 
 
 ** Conference Paper **
@@ -404,27 +426,34 @@ Before submitting the final camera ready copy, remember to:
  process uses the appropriate paper size.
 
 [6 <./plot/exp3-thp.png (PNG copy)> <./plot/exp3-lt.png (PNG copy)>]
-(./paper.aux) ) 
+(./paper.aux)
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: There were multiply-defined labels.
+
+ ) 
 Here is how much of TeX's memory you used:
- 3639 strings out of 495061
- 57622 string characters out of 1182622
- 129026 words of memory out of 3000000
- 6774 multiletter control sequences out of 15000+50000
- 34539 words of font info for 65 fonts, out of 3000000 for 9000
+ 3643 strings out of 495061
+ 57651 string characters out of 1182622
+ 130026 words of memory out of 3000000
+ 6776 multiletter control sequences out of 15000+50000
+ 36782 words of font info for 67 fonts, out of 3000000 for 9000
  28 hyphenation exceptions out of 8191
- 41i,7n,38p,417b,284s stack positions out of 5000i,500n,10000p,200000b,50000s
-{/usr/share/texmf-texlive/fonts/enc/dvips/base/8r.enc}</usr/shar
-e/texmf-texlive/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texmf-tex
-live/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-texlive/fonts/
-type1/public/amsfonts/cm/cmmi5.pfb></usr/share/texmf-texlive/fonts/type1/public
-/amsfonts/cm/cmmi7.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm
-/cmr10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr7.pfb></
-usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/t
-exmf-texlive/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texmf-texlive
-/fonts/type1/urw/times/utmb8a.pfb></usr/share/texmf-texlive/fonts/type1/urw/tim
-es/utmbi8a.pfb></usr/share/texmf-texlive/fonts/type1/urw/times/utmr8a.pfb></usr
-/share/texmf-texlive/fonts/type1/urw/times/utmri8a.pfb>
-Output written on paper.pdf (6 pages, 446115 bytes).
+ 41i,7n,38p,825b,284s stack positions out of 5000i,500n,10000p,200000b,50000s
+{/usr/share/texmf-texlive/fonts/enc/dvips/base/8r.enc}</usr/share/texmf-texli
+ve/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texmf-texlive/fonts/ty
+pe1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-texlive/fonts/type1/public/
+amsfonts/cm/cmmi5.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/
+cmmi7.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr10.pfb></
+usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/tex
+mf-texlive/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-texlive/
+fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texmf-texlive/fonts/type1/
+urw/times/utmb8a.pfb></usr/share/texmf-texlive/fonts/type1/urw/times/utmbi8a.pf
+b></usr/share/texmf-texlive/fonts/type1/urw/times/utmr8a.pfb></usr/share/texmf-
+texlive/fonts/type1/urw/times/utmri8a.pfb>
+Output written on paper.pdf (6 pages, 448148 bytes).
 PDF statistics:
  107 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

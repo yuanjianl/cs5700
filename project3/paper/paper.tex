@@ -25,7 +25,12 @@ Email: lu.b@husky.neu.edu\\}
 
 
 \begin{abstract}
-This paper simulated and analyzes the performance between different TCP variants on a simple network topology with a tool called NS-2. The key comparision factors this looking for between TCP variants are latency, drop rate, throughput and fairness. Multiple experiments were simulated against Tahoe, Reno, NewReno and Vegas. Finally, this paper investigated the queuing influences with TCP Reno and SACK.
+This paper simulated and analyzes the performance between different 
+TCP variants on a simple network topology with a tool called NS-2. The 
+key comparision factors this looking for between TCP variants are 
+latency, drop rate, throughput and fairness. Multiple experiments were 
+simulated against Tahoe, Reno, NewReno and Vegas. Finally, this paper 
+investigated the queuing influences with TCP Reno and SACK.
 \end{abstract}
 
 
@@ -82,7 +87,7 @@ contain all events (CBR and TCP) will be generated. We calculated the
  The simulation result is shown in figure~\ref{fig:exp1_thp}.
 \begin{figure}[!htb]
     \centering
-    \includegraphics[width=1.0\linewidth]{plot/exp1-thp.png}
+    \includegraphics[width=0.9\linewidth]{plot/exp1-thp.png}
     \caption{Throughput of TCP variants}
     \label{fig:exp1_thp}
 \end{figure}
@@ -108,7 +113,7 @@ EFFECTIVE-ACK for effecitve ACK (un-duplicate ACK). This way, the drop
 can be described in figure~\ref{fig:exp1_drop}.
 \begin{figure}[!htb]
     \centering
-    \includegraphics[width=1.0\linewidth]{plot/exp1-dr.png}
+    \includegraphics[width=0.9\linewidth]{plot/exp1-dr.png}
     \caption{Packets Drop Rate of TCP variants}
     \label{fig:exp1_drop}
 \end{figure}
@@ -148,7 +153,7 @@ When the TCP flow stops, we can calculate the average latency with:
 The average latencies for the four TCP variants are showed in figure~\ref{fig:exp1_lt}
 \begin{figure}[!htb]
     \centering
-    \includegraphics[width=1.0\linewidth]{plot/exp1-lt.png}
+    \includegraphics[width=0.9\linewidth]{plot/exp1-lt.png}
     \caption{Average Latency of TCP variants}
     \label{fig:exp1_lt}
 \end{figure}
@@ -173,7 +178,7 @@ perform the T-Test by using the mean and standard deviation.
 The bigger the t is, the more likely that the difference between group T and group C are confidential. And figure~\ref{fig:exp1_t_test}
 \begin{figure}[!htb]
     \centering
-    \includegraphics[width=1.0\linewidth]{plot/exp1-t-test.png}
+    \includegraphics[width=0.9\linewidth]{plot/exp1-t-test.png}
     \caption{Sample T-test figure}
     \label{fig:exp1_t_test}
 \end{figure}
@@ -212,19 +217,19 @@ For this simulation, we want to compare the fairness between Reno/Reno and Vegas
 to see if these protocols are fair to themselves. Figure ~\ref{fig:exp2_thp_rr}, figure~\ref{fig:exp2_dr_rr} and figure~\ref{fig:exp2_dr_rr} shows the Throughput, Packet Drop Rate and Latency, respectively.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\linewidth]{plot/exp2-thp-Reno-Reno.png}
+    \includegraphics[width=0.9\linewidth]{plot/exp2-thp-Reno-Reno.png}
     \caption{Fairness of Throughput on Reno/Reno}
     \label{fig:exp2_thp_rr}
 \end{figure}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\linewidth]{plot/exp2-dr-Reno-Reno.png}
+    \includegraphics[width=0.9\linewidth]{plot/exp2-dr-Reno-Reno.png}
     \caption{Fairness of Packets Drop Rate on Reno/Reno}
     \label{fig:exp2_dr_rr}
 \end{figure}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\linewidth]{plot/exp2-lt-Reno-Reno.png}
+    \includegraphics[width=0.9\linewidth]{plot/exp2-lt-Reno-Reno.png}
     \caption{Fairness of Latency on Reno/Reno}
     \label{fig:exp2_lt_rr}
 \end{figure}
@@ -235,12 +240,12 @@ still acceptable to say that Reno is fair to another Reno. At a
 congestion network, both Reno are competing for the remaining resource
 and alternately occupy more bandwidth for a small amount of time. 
 
-Similar results show in Vegas/Vegas. Figure ~\ref{fig:exp2_thp_vv} shows the Throughput.
+Similar results show in Vegas/Vegas. Figure ~\ref{fig:exp2_lt_vv} shows the latency.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\linewidth]{plot/exp2-thp-Vegas-Vegas.png}
-    \caption{Fairness of Throughput on Vegas/Vegas}
-    \label{fig:exp2_thp_vv}
+    \includegraphics[width=0.9\linewidth]{plot/exp2-lt-Vegas-Vegas.png}
+    \caption{Fairness of Latency on Vegas/Vegas}
+    \label{fig:exp2_lt_vv}
 \end{figure}
 According to this, Reno and Vegas are fair to themselves in most conditions.
 
@@ -251,19 +256,19 @@ figure~\ref{fig:exp2_dr_nv} shows the Throughput, Packet Drop Rate and
 Latency, respectively.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\linewidth]{plot/exp2-thp-NewReno-Vegas.png}
+    \includegraphics[width=0.9\linewidth]{plot/exp2-thp-NewReno-Vegas.png}
     \caption{Fairness of Throughput on NewReno/Vegas}
     \label{fig:exp2_thp_nv}
 \end{figure}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\linewidth]{plot/exp2-dr-NewReno-Vegas.png}
+    \includegraphics[width=0.9\linewidth]{plot/exp2-dr-NewReno-Vegas.png}
     \caption{Fairness of Packets Drop Rate on NewReno/Vegas}
     \label{fig:exp2_dr_nv}
 \end{figure}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\linewidth]{plot/exp2-lt-NewReno-Vegas.png}
+    \includegraphics[width=0.9\linewidth]{plot/exp2-lt-NewReno-Vegas.png}
     \caption{Fairness of Latency on NewReno/Vegas}
     \label{fig:exp2_lt_nv}
 \end{figure}
@@ -282,13 +287,13 @@ In this simulation, we want to study the fairness between NewReno/Vegas.
 Figure ~\ref{fig:exp2_thp_nr} and figure~\ref{fig:exp2_dr_nr} shows the Throughput and Packet Drop Rate, respectively.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\linewidth]{plot/exp2-thp-NewReno-Reno.png}
+    \includegraphics[width=0.9\linewidth]{plot/exp2-thp-NewReno-Reno.png}
     \caption{Fairness of Throughput on NewReno/Reno}
     \label{fig:exp2_thp_nr}
 \end{figure}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\linewidth]{plot/exp2-dr-NewReno-Reno.png}
+    \includegraphics[width=0.9\linewidth]{plot/exp2-dr-NewReno-Reno.png}
     \caption{Fairness of Packets Drop Rate on NewReno/Reno}
     \label{fig:exp2_dr_nr}
 \end{figure}
@@ -309,101 +314,57 @@ detected, more data will be sent to check if it is a real serious
 congestion. 
 
 \section{Experiment 3: Influence of Queuing}
-Queuing disciplines like DropTail and Random Early Drop (RED) are 
-algorithms that control how packets in a queue are treated. In these 
-experiments, instead of varying the rate of the CBR flow, we will 
-study the influence of the queuing discipline used by nodes on the 
-overall throughput of flows.
+Queuing disciplines like DropTail and Random Early Drop (RED) are algorithms that control how packets in a queue are treated. In these experiments, instead of varying the rate of the CBR flow, we will study the influence of the queuing discipline used by nodes on the overall throughput of flows.
 
-The same topology from experiment 1 is used and it has one TCP flow 
-(N1-N4) and one CBR/UDP (N5-N6) flow as figure~\ref{fig:exp3_tpg} shows.
+The same topology from experiment 1 is used and it has one TCP flow (N1-N4) and one CBR/UDP (N5-N6) flow as figure~\ref{images/exp3_top} shows. 
 \begin{figure}[!htb]
     \centering
     \includegraphics[width=0.8\linewidth]{images/top_exp3.png}
     \caption{Experiment 3 Network Topology}
-    \label{fig:exp3_tpg}
+    \label{fig:exp3_top}
 \end{figure}
-First, TCP flow is started at time 0. Once the TCP flow is steady, the
- CBR source is started, at 15 seconds in our case. CBR flow is stopped 
- at 85 seconds and TCP flow is stopped at 100 seconds. What's TCP 
- window size is 200 and CBR flow rate is 8Mbps.
+First, TCP flow is started at time 0. Once the TCP flow is steady, the CBR source is started, at 20 seconds in our case. CBR flow is stopped at 60 seconds and TCP flow is stopped at 80 seconds. What's TCP window size is 200 and CBR flow rate is 1Mbps.
 
-We are trying to understand how the TCP and CBR flows change under the 
-following two different queuing algorithms: DropTail and RED. Also we 
-are performing the experiments with two TCP variants Reno and SACK.
+We are trying to understand how the TCP and CBR flows change under the following two different queuing algorithms: DropTail and RED. Also we are performing the experiments with two TCP variants Reno and SACK.\\
 
 \subsection{Average Bandwidth}
-The way that we calculate bandwidth over time is by calculating those 
-successfully transferred data packets during a short period of time 
-$\delta t$. Assume size of each packet is known in advance, total 
-number of bytes can be know by multiplying size of packet with number 
-of packets that have been transmitted. Then we can know bandwidth B, 
-which is  
+The way that we calculate bandwidth over time is by calculating those successfully transferred data packets $N_{total}$ during a short period of time from $T_{start}$ to $T_{end}$. Assume size of each packet is known in advance$S_{packet}$, total number of bytes can be know by multiplying size of packet with number of packets that have been transmitted. Then we can know bandwidth B at the moment $T_{start}$, which is  
 \begin{center}
-    $B = \frac{packetSize \times packetCount}{\delta t}$
+    $B = \dfrac{S_{packet} \times N_{total}}{T_{start} - T_{end}}$
 \end{center}
-For each pair of TCP variant/ queue method, we set the short period of time granularity to be 0.5s, which is described in figure~\ref{fig:exp3-thp}.\\
+For each pair of TCP variant/ queue method, we set the short period of time granularity to be 0.5s and packet size is 1040Mb in our case. We Average Bandwidth over time is described in figure~\ref{fig:exp3-thp}.\\
 \begin{figure}[!htb]
     \centering
-    \includegraphics[width=1.0\linewidth]{plot/exp3-thp.png}
+    \includegraphics[width=0.9\linewidth]{plot/exp3-thp.png}
     \caption{Average Bandwidth}
     \label{fig:exp3-thp}
 \end{figure}
-As we can see, before slow start of CBR flow, no what kind of TCP 
-variant it is, the TCP flow with DropTail queue method performance 
-better than the one with queue method RED. After the slow start of CBR 
-flow, although all flows are in state of oscillation, we still can 
-conclude that flow with DropTail queue method has a higher throughput 
-than RED queue method from the figure. As a result, queuing discipline 
-doesn’t provide fair bandwidth to each flow. Overall, DropTail has a 
-better performance over RED in regardless of the TCP variant.
 
-During the stage of slow start of CBR flow, different TCP with 
-different queue method experience different decrease speed, overall 
-Reno with DropTail decrease most sharply. This results from two 
-reasons. First, DropTail transmits as many packets as possible unless 
-the queue is full. Before CBR flow starts, link between node 1 and 
-node 4 has enough brand width for packets to go through. In this case 
-very few packets are droped. RED is the policy that drops packets 
-randomly even if the queue is not full. Second, during slow start of 
-CBR, a lot of packets of the TCP flow are dropped. Reno is going to 
-halve the congestion window and set the slow start threshold to new 
-congestion window, perform a fast retransmit, and enter a phase called 
-Fast Recovery. While SACK retains the slow start part of Reno, it also 
-has the coarse grained timeout to fall back on.
+As we can see, before we start CBR flow, bandwidth of the four kinds of pair don't vary much and TCP flow with DropTail method wins a little bit.
 
+While during the state of CBR slow start, no matter what kind of TCP variant it is, the ones with RED queue method performance better with smother decrease than the ones with queue method DropTail. This results from attributes of RED which is a one of the most popular congestion avoidance algorithm. RED statistically drops packets from flows before it reaches its hard limit. This causes a congested link to slow more gracefully, and prevents retransmit synchronization. This also helps TCP find its fair speed faster by allowing some packets to get dropped sooner keeping queue sizes low and latency under control. While DropTail tends to transmit as many packets as possible. When CBR slow starts, a lot of packets get dropped and DropTail policy chooses to halve the window size to enter the slow start mode.
 
-After CBR flow gets stable, all TCP flow throughputs decrease to 
-stable value comparing to the throughput without CBR flow. Reno with 
-queue method RED still has the worst performance, which results from 
-randomly dropping packets attribute of RED.
+After CBR flow gets stable, all TCP flow throughputs decrease to s table value comparing to the throughput without CBR flow. And we can still see directly from the figure that flow with RED queue method has a higher throughput than DropTail queue method. As a result, queuing discipline doesn’t provide fair bandwidth to each flow especially for DropTail queue method. Since CBR flow is likely to fill up the most part of queue by sending packets continuously and this makes TCP packets get dropped even before in the queue.
+
+Overall, RED has a better performance over DropTail in regardless of the TCP variant. And TCP variant SACK with queue method RED has the hightest throughput when CBR flow exists.\\
 
 \subsection{Average Latency}
-Assume total latency of all packets during a short period of time $\delta t$ and total number of received packets over that short period of time is known, we can know the average latency for each packet during that period of time is 
+When referring to average latency during a short period of time from $T_{start}$ to $T_{end}$, we add up latency, which is $L_{total}$ for the total number of received packets over that period of time, and we can know the average latency for moment $T_{start}$
 \begin{center}
-    $L = α / (total number of received packets)$
+    $L = \dfrac{L_{total}}{T_{start} - T_{end}}$
 \end{center}
-On the basis of each short period, we can accumulatively record latency over the experiment time as the figure~\ref{fig:exp3-lt} describes.
+
+On the basis of each short period, we can accumulatively record latency over the experiment time as the figure~\ref{fig:exp3-lt} describes.\\
 \begin{figure}[!htb]
     \centering
-    \includegraphics[width=1.0\linewidth]{plot/exp3-lt.png}
+    \includegraphics[width=0.9\linewidth]{plot/exp3-lt.png}
     \caption{Average Latency}
     \label{fig:exp3-lt}
 \end{figure}
-For TCP variant Reno, RED queue method results in a higher latency 
-than queue method DropTail overall, which is not surprisingly. The 
-most interesting point here is that although SACK with queue method 
-RED doesn’t have the best through as shown before, this pair does have 
-the remarkable lowest latency no matter with or without CBR flow. This 
-shows RED is a good idea while dealing with SACK. At the stage of slow 
-start of BCR flow, TCP variant experience a sharp increase of latency 
-and RED queue method performs a little better than DropTail as the 
-same reasons illustrated before.
 
-Overall, queue method RED has a higher end-to-end latency than 
-DropTail, while when RED is combined with TCP variant SACK, it has 
-pretty good performance. Reacting to the creation of CBR flow, Reno performs the worst no matter what kind of queue method it is using.
+TCP variant Reno, queue method DropTail results in a extremely high latency at the stage of CBR slow start, which is not surprisingly. Since DropTail policy gets a lot of packets get dropped and DropTail policy chooses to halve the window size to enter the slow start mode. Overall flows with RED has a better performance of latency than DropTail inregardless of what kind TCP variant it is. Because RED has the potential to overcome some of the problems discovered in Drop-Tail such as synchronization of TCP flows and correlation of the drop events (multiple packets being dropped in sequence) within a TCP flow.
 
+The most interesting point here is that although SACK with queue method RED almost have a stable curve for latency.This shows RED is a good idea while dealing with SACK which provides higher throughput and low latency. Overall, queue method DropTail has a higher end-to-end latency than RED when stale CBR flow exists, and RED is combined with TCP variant SACK, it has pretty good performance. Reacting to the creation of CBR flow, Reno performs the worst no matter what kind of queue policy it is using.\\
 
 \section{Conclusion}
 In this paper, we simulate different TCP variants with NS-2 and analyze the performance of them based on throughput, packets 
@@ -413,7 +374,20 @@ we can conclude that:
     \item Vegas TCP performs comparatively better than Tahoe, Reno and NewReno TCP.
     \item Same TCP variants are usually fair to each other in the same network. Different variants may have different reaction to possible
     congestion, which may ``steal'' other's resources. 
-    \item DropTail has a better performace than RED when considering throughpuy. RED works remarkablely well with SACK TCP, which provides low-latency and more stable transmission.
+    \item DropTail has a better performace than RED when considering throughput. RED works remarkablely well with SACK TCP, which provides low-latency and more stable transmission.
 \end{enumerate}
+And for following research, real-life implementation and test should 
+be conducted, and check if there are any side-affects of the Variants
+(i.e. Taking all resources).
+
+\begin{thebibliography}{1}
+
+\bibitem{red}
+Victor Firoiu and Marty Borden\emph{A Study of Active Queue Management for Congestion Control}.
+
+\bibitem{red}
+Sally Floyd and Van Jacobson\emph{Random Early Detection Gateways for Congestion Avoidance}.
+
+\end{thebibliography}
 
 \end{document}
