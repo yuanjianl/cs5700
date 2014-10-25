@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2013.4.9)  24 OCT 2014 19:35
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2013.4.9)  24 OCT 2014 23:46
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -326,6 +326,72 @@ File: plot/exp1-lt.png Graphic file (type png)
 File: plot/exp1-t-test.png Graphic file (type png)
  <use plot/exp1-t-test.png>
 [2 <./plot/exp1-dr.png (PNG copy)> <./plot/exp1-lt.png (PNG copy)>]
+<images/top_exp2.png, id=30, 1439.3775pt x 657.45625pt>
+File: images/top_exp2.png Graphic file (type png)
+
+<use images/top_exp2.png>
+<plot/exp2-thp-Reno-Reno.png, id=31, 642.4pt x 481.8pt>
+File: plot/exp2-thp-Reno-Reno.png Graphic file (type png)
+
+<use plot/exp2-thp-Reno-Reno.png>
+<plot/exp2-dr-Reno-Reno.png, id=32, 642.4pt x 481.8pt>
+File: plot/exp2-dr-Reno-Reno.png Graphic file (type png)
+
+<use plot/exp2-dr-Reno-Reno.png>
+<plot/exp2-lt-Reno-Reno.png, id=33, 642.4pt x 481.8pt>
+File: plot/exp2-lt-Reno-Reno.png Graphic file (type png)
+
+<use plot/exp2-lt-Reno-Reno.png> [3 <./plot/exp1-t-test.png (PNG copy)> <./imag
+es/top_exp2.png> <./plot/exp2-thp-Reno-Reno.png (PNG copy)> <./plot/exp2-dr-Ren
+o-Reno.png (PNG copy)> <./plot/exp2-lt-Reno-Reno.png (PNG copy)>]
+<plot/exp2-thp-Vegas-Vegas.png, id=42, 642.4pt x 481.8pt>
+File: plot/exp2-thp-Vegas-Vegas.png Graphic file (type png)
+
+<use plot/exp2-thp-Vegas-Vegas.png>
+<plot/exp2-thp-NewReno-Vegas.png, id=43, 642.4pt x 481.8pt>
+File: plot/exp2-thp-NewReno-Vegas.png Graphic file (type png)
+
+<use plot/exp2-thp-NewReno-Vegas.png>
+<plot/exp2-dr-NewReno-Vegas.png, id=44, 642.4pt x 481.8pt>
+File: plot/exp2-dr-NewReno-Vegas.png Graphic file (type png)
+
+<use plot/exp2-dr-NewReno-Vegas.png>
+<plot/exp2-lt-NewReno-Vegas.png, id=45, 642.4pt x 481.8pt>
+File: plot/exp2-lt-NewReno-Vegas.png Graphic file (type png)
+
+<use plot/exp2-lt-NewReno-Vegas.png>
+<plot/exp2-thp-NewReno-Reno.png, id=46, 642.4pt x 481.8pt>
+File: plot/exp2-thp-NewReno-Reno.png Graphic file (type png)
+
+<use plot/exp2-thp-NewReno-Reno.png>
+<plot/exp2-dr-NewReno-Reno.png, id=47, 642.4pt x 481.8pt>
+File: plot/exp2-dr-NewReno-Reno.png Graphic file (type png)
+
+<use plot/exp2-dr-NewReno-Reno.png> [4 <./plot/exp2-thp-Vegas-Vegas.png (PNG co
+py)> <./plot/exp2-thp-NewReno-Vegas.png (PNG copy)> <./plot/exp2-dr-NewReno-Veg
+as.png (PNG copy)> <./plot/exp2-lt-NewReno-Vegas.png (PNG copy)>]
+<images/top_exp3.png, id=55, 1439.3775pt x 657.45625pt>
+File: images/top_exp3.png Graphic file (type png)
+
+<use images/top_exp3.png> <plot/exp3-thp.png, id=56, 642.4pt x 481.8pt>
+File: plot/exp3-thp.png Graphic file (type png)
+
+<use plot/exp3-thp.png>
+Missing character: There is no â in font ptmr7t!
+Missing character: There is no € in font ptmr7t!
+Missing character: There is no ™ in font ptmr7t!
+ [5 <./plot/exp2-thp-NewReno-Reno.png (PNG copy)> <./plot/exp2-dr-NewReno-Reno.
+png (PNG copy)> <./images/top_exp3.png>]
+Missing character: There is no Î in font cmr10!
+Missing character: There is no ± in font cmr10!
+
+<plot/exp3-lt.png, id=63, 642.4pt x 481.8pt>
+File: plot/exp3-lt.png Graphic file (type png)
+ <use plot/exp3-lt.png>
+Missing character: There is no â in font ptmr7t!
+Missing character: There is no € in font ptmr7t!
+Missing character: There is no ™ in font ptmr7t!
+
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -337,30 +403,30 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[3 <./plot/exp1-t-test.png (PNG copy)>] (./paper.aux) ) 
+[6 <./plot/exp3-thp.png (PNG copy)> <./plot/exp3-lt.png (PNG copy)>]
+(./paper.aux) ) 
 Here is how much of TeX's memory you used:
- 3565 strings out of 495061
- 55633 string characters out of 1182622
+ 3639 strings out of 495061
+ 57622 string characters out of 1182622
  129026 words of memory out of 3000000
- 6712 multiletter control sequences out of 15000+50000
- 35675 words of font info for 66 fonts, out of 3000000 for 9000
+ 6774 multiletter control sequences out of 15000+50000
+ 34539 words of font info for 65 fonts, out of 3000000 for 9000
  28 hyphenation exceptions out of 8191
  41i,7n,38p,417b,284s stack positions out of 5000i,500n,10000p,200000b,50000s
-{/usr/share/texmf-texliv
-e/fonts/enc/dvips/base/8r.enc}</usr/share/texmf-texlive/fonts/type1/public/amsf
-onts/cm/cmex10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmm
-i10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmmi5.pfb></us
-r/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texm
-f-texlive/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-texlive/fo
-nts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texmf-texlive/fonts/type1/pub
-lic/amsfonts/cm/cmsy10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfont
-s/cm/cmsy7.pfb></usr/share/texmf-texlive/fonts/type1/urw/times/utmb8a.pfb></usr
-/share/texmf-texlive/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texmf-texliv
-e/fonts/type1/urw/times/utmr8a.pfb></usr/share/texmf-texlive/fonts/type1/urw/ti
-mes/utmri8a.pfb>
-Output written on paper.pdf (3 pages, 229794 bytes).
+{/usr/share/texmf-texlive/fonts/enc/dvips/base/8r.enc}</usr/shar
+e/texmf-texlive/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texmf-tex
+live/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-texlive/fonts/
+type1/public/amsfonts/cm/cmmi5.pfb></usr/share/texmf-texlive/fonts/type1/public
+/amsfonts/cm/cmmi7.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm
+/cmr10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr7.pfb></
+usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/t
+exmf-texlive/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texmf-texlive
+/fonts/type1/urw/times/utmb8a.pfb></usr/share/texmf-texlive/fonts/type1/urw/tim
+es/utmbi8a.pfb></usr/share/texmf-texlive/fonts/type1/urw/times/utmr8a.pfb></usr
+/share/texmf-texlive/fonts/type1/urw/times/utmri8a.pfb>
+Output written on paper.pdf (6 pages, 446115 bytes).
 PDF statistics:
- 72 PDF objects out of 1000 (max. 8388607)
+ 107 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 26 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 91 words of extra memory for PDF output out of 10000 (max. 10000000)
 
