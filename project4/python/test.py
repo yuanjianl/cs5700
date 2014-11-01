@@ -62,7 +62,7 @@ ip_header = pack('!BBHHHBBH4s4s' , ip_ihl_ver, ip_tos, ip_tot_len, ip_id, ip_fra
 # tcp header fields
 tcp_source = 1234   # source port
 tcp_dest = 80   # destination port
-tcp_seq = 454
+tcp_seq = 45400
 tcp_ack_seq = 0
 tcp_doff = 5    #4 bit field, size of tcp header, 5 * 4 = 20 bytes
 #tcp flags

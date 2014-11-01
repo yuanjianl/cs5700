@@ -43,11 +43,12 @@ class Http(object):
         
 
     def sendRequest(self, url):
-        header, host = self.constructGetRequest(url)
-        self.tcp.send(header, host)
+        header, hostname = self.constructGetRequest(url)
+        self.tcp.bind_remote_host(hostname)
+        self.tcp.send(header, hostname)
 
     def receiveResponse(self):
-        response = self.tcp.receive()
+        response = self.tcp.receive_result()
         print response
 
 def main(argv):
