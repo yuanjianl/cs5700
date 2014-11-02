@@ -65,28 +65,30 @@ class Ip(object):
         return ip_header
 
 
-    def send(self, hostname, tcp_packet):
-        dest_ip = utilities.getDestIP(hostname)
+    def send(self, dest_ip, tcp_packet):
         ip_header = self.build_header(dest_ip)
         ip_packet = ip_header + tcp_packet
         
-        self.send_sock.sendto(ip_packet, (dest_ip , 0 )) 
+        self.send_sock.sendto(ip_packet, ( dest_ip , 0 )) 
 
     def raw_to_tcp_packet(self, raw_packet):
         return raw_packet[20:]
 
-    def receive(self, hostname, tcp_port):
+    def receive(self, dest_ip, tcp_port):
         while True:
-            raw_packet = self.recv_sock.recv(4096)
+            raw_packet = self.recv_sock.recv(65536)
             packet_dest_ip = unpack('!BBBB', raw_packet[16: 20])
             src_ip = utilities.ip_to_tuple(self.local_ip)
             if src_ip == packet_dest_ip:
                 packet_src_ip = unpack('!BBBB', raw_packet[12:16])
                 # Check if the packet is from remote host.
-                dest_ip = utilities.ip_to_tuple(utilities.getDestIP(hostname))
+                # print "In ip: "
+                # print dest_ip
+                if not isinstance(dest_ip, tuple):
+                    dest_ip = utilities.ip_to_tuple(dest_ip)
                 if packet_src_ip == dest_ip:
                     port = unpack('!H', raw_packet[22: 24])[0]
-                    print port
+                    # print port
                     if tcp_port == int(port):
                         # TODO: Should also check the checksum and so on of IP header
                         return self.raw_to_tcp_packet(raw_packet)

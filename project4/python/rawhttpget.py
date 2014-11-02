@@ -5,8 +5,6 @@ import tcp
 URL_REGEX = "^(.*:)//([a-z\-.]+)(:[0-9]+)?(.*)$"
 
 class Http(object):
-    def __init__(self):
-        self.tcp = tcp.Tcp()
 
     # Return the filename for saving on disk.
     def getFilename(self, url):
@@ -37,26 +35,38 @@ class Http(object):
         header += "GET " + path + " HTTP/1.1\n"
         header += "Host: " + host + "\n"
         header += "Connection: keep-alive\n"
-        header += "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.120 Safari/537.36\n"
+        header += "User-Agent: Wget/1.13.4(linux-gnu)\n"
         header += "\n"
         return header, host
         
 
     def sendRequest(self, url):
         header, hostname = self.constructGetRequest(url)
-        self.tcp.bind_remote_host(hostname)
-        self.tcp.send(header, hostname)
+        self.tcp = tcp.Tcp(hostname)
+        self.tcp.send(header)
 
     def receiveResponse(self):
         response = self.tcp.receive_result()
-        print response
+        status = response.split("\n")[0]
+        if "200" in status:
+            index = response.find("\n\r")
+            return response[index + 3 : ]
+        else:
+            print "Wrong status code. Abandoned request."
+            return ""
+
+    def write_to_file(self, filename, lines):
+        file = open(filename, "w+")
+        file.writelines(lines)
+        file.close()
 
 def main(argv):
     url = argv[0]
     http = Http()
     filename = http.getFilename(url)
     http.sendRequest(url)
-    http.receiveResponse()
+    response = http.receiveResponse()
+    http.write_to_file(filename, response)
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
