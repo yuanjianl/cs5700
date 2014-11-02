@@ -3,6 +3,8 @@ import ip
 from struct import *
 import random
 import utilities
+from sets import Set
+import time
 
 
 '''
@@ -36,19 +38,22 @@ TCP Header
 class Tcp(object):
     MAX_WIN_SIZE = 5840
 
-    def __init__(self):
+    def __init__(self, hostname):
         self.ip = ip.Ip()
         self.src_ip = utilities.getLocalIP()
+        self.dest_ip = utilities.getDestIP(hostname)
         self.src_port = random.randint(1024, 65530)
         self.dest_port = 80
         self.seq_num = random.randint(0, 65536 * 65536)
         self.ack_num = 0
         self.c_wind = 1
 
-    def bind_remote_host(self, hostname):
-        self.dest_ip = utilities.getDestIP(hostname)
+        # The expected packets is the lists of sent packets
+        # but not yet acked. The entry is expected ack number.
+        self.expected_packets = Set([])
+        self.received_packets = Set([])
 
-    def build_header(self, payload, first=False):
+    def build_header(self, payload, first=False, isFIN = False):
         # tcp header fields
         
         # source port
@@ -61,7 +66,11 @@ class Tcp(object):
         #4 bit field, size of tcp header, 5 * 4 = 20 bytes
         tcp_doff = 5
         #tcp flags
-        tcp_fin = 0
+        if isFIN:
+            tcp_fin = 1
+        else :
+            tcp_fin = 0
+
         if first:
             tcp_syn = 1
             tcp_ack = 0
@@ -98,75 +107,133 @@ class Tcp(object):
         # make the tcp header again and fill the correct checksum - remember checksum is NOT in network byte order
         tcp_header = pack('!HHLLBBH' , tcp_source, tcp_dest, tcp_seq, tcp_ack_seq, tcp_offset_res, tcp_flags,  tcp_window) + pack('H' , check_sum) + pack('!H' , tcp_urg_ptr)
 
-        self.seq_num += len(payload)
         return tcp_header
+
+    def syn(self):
+        payload = ""
+        # True sets syn flag to 1 and ack to 0.
+        packet = self.build_header(payload, True) + payload
+
+        self.expected_packets.add( self.seq_num + 1 )
+        # The SYN packet
+        self.ip.send(self.dest_ip, packet)
+
+    def receive_syn_ack(self):
+        raw_packet = self.receive()
+        if self.process_raw_packet(raw_packet) == False:
+            return
+        self.seq_num += 1
+
+
+    def ack(self):
+        payload = ""
+        packet = self.build_header(payload) + payload
+
+        self.ip.send(self.dest_ip, packet)
+
+    def fin(self):
+        payload = ""
+        packet = self.build_header(payload, False, True) + payload
+
+        self.ip.send(self.dest_ip, packet)
+
+
 
     # Set seq and ack according to raw_packet. Then generate
     # the syn/ack packet.
     def process_raw_packet(self, raw_packet):
         remote_seq = int(unpack("!I", raw_packet[4: 8])[0])
+        fin = int(unpack("!B", raw_packet[13: 14])[0]) & 0x1
+        # print "DEBUG: fin is %d" % (fin)
+        if remote_seq in self.received_packets:
+            print "DEBUG: Packet " + str(remote_seq) + " is duplicated."
+            return False, False, fin
         message_len = len(raw_packet) - 4 * self.header_length(raw_packet)
         if message_len == 0:
             message_len = 1
 
         self.ack_num = remote_seq + message_len
 
-        return raw_packet[-message_len : ]
+        self.received_packets.add(remote_seq)
+
+        # if message_len != 1:
+        #     self.result += raw_packet[-message_len : ]
+        # if fin == 1:
+        #     print self.result
+        #     self.fin()
+        print "DEBUG: received %x, length: %d, fin is %d" % (remote_seq, message_len, fin)
+        return raw_packet[-message_len : ], remote_seq, fin
         
 
-    # TODO check if the recv_packet is valid.
+    # TODO check if the recv_packet is valid. ACK number, checksum.
     def is_valid(self, raw_packet):
+        remote_seq = int(unpack("!I", raw_packet[4:8])[0])
         remote_ack = int(unpack("!I", raw_packet[8:12])[0])
-        return True
+        if remote_ack in self.expected_packets:
+            self.expected_packets.remove(remote_ack)
+            return True
+        elif remote_seq >= self.ack_num:
+            return True
+        else :
+            print "DEBUG: Packet %d %d is discarded." % (remote_seq, remote_ack)
+            return False
 
     def header_length(self, raw_packet):
         return int(unpack("!B", raw_packet[12: 13])[0] / 16)
 
     # Three way handshake.
-    def connect_to_server(self, hostname):
-        payload = ""
-        packet = self.build_header(payload, True) + payload
+    def connect_to_server(self):
+        self.syn()
+        self.receive_syn_ack()
+        self.ack()
 
-        # The SYN packet
-        self.ip.send(hostname, packet)
-        
-        self.receive(hostname)
-        self.seq_num += 1
-
-        payload = ""
-        packet = self.build_header(payload) + payload
-
-        # Finish the three-way-handshake.
-        self.ip.send(hostname, packet)
-
-    def process_response(self, hostname):
+    def process_response(self):
         self.result = ""
         while True:
-            self.result += self.receive(hostname)
-            payload = ""
-            packet = self.build_header(payload) + payload
-            self.ip.send(hostname, packet)
-            print self.result
+            # time.sleep(1)
+            raw_packet = self.receive()
+            packet, seq, fin = self.process_raw_packet(raw_packet)
+            # if packet == False:
+            #     continue
+            # print "DEBUG: Fin is %d" % (fin)
+            self.result += packet
+            if fin == 1:
+                self.ack()
+                self.fin()
+                break
+            else:
+                # print "DEBUG: About to ack %x" % (seq)
+                self.ack()
 
 
-    def send(self, payload, hostname):
+    def send(self, payload):
         # First, connect to remote server.
-        self.connect_to_server(hostname)
-        
-        # Then send the request.
-        tcp_packet = self.build_header(payload) + payload
-        self.ip.send(hostname, tcp_packet)
+        print "Starting three-way-handshake."
+        self.connect_to_server()
+        print "Finished three-way-handshake."
 
+        print "Starting the HTTP request."
+        # Then send the request.
+        # print "DEBUG: HTTP request: %s" % ( payload )
+        tcp_packet = self.build_header(payload) + payload
+        self.ip.send(self.dest_ip, tcp_packet)
+
+        # This is the ACK of HTTP request.
+        self.receive()
+        self.seq_num += len(payload)
+        print "Finished the HTTP request."
+        
+        print "Getting response"
         # Then process response get get final result.
-        result = self.process_response(hostname)
+        result = self.process_response()
 
     def receive_result(self):
-        pass
+        return self.result
         
 
-    def receive(self, hostname):
+    def receive(self):
         while True:
             # Receive the ACK packet from server.
-            recv_packet = self.ip.receive(hostname, self.src_port)
+            recv_packet = self.ip.receive(self.dest_ip, self.src_port)
             if self.is_valid(recv_packet):
-                return self.process_raw_packet(recv_packet)
+                return recv_packet
