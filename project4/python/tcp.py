@@ -120,7 +120,7 @@ class Tcp(object):
 
     def receive_syn_ack(self):
         raw_packet = self.receive()
-        if self.process_raw_packet(raw_packet) == False:
+        if self.process_raw_packet(raw_packet, True) == False:
             return
         self.seq_num += 1
 
@@ -141,13 +141,17 @@ class Tcp(object):
 
     # Set seq and ack according to raw_packet. Then generate
     # the syn/ack packet.
-    def process_raw_packet(self, raw_packet):
+    def process_raw_packet(self, raw_packet, handshake = False):
         remote_seq = int(unpack("!I", raw_packet[4: 8])[0])
         fin = int(unpack("!B", raw_packet[13: 14])[0]) & 0x1
+        push_flag = int(unpack("!B", raw_packet[13: 14])[0]) & 0x8
         # print "DEBUG: fin is %d" % (fin)
         if remote_seq in self.received_packets:
             print "DEBUG: Packet " + str(remote_seq) + " is duplicated."
             return False, False, fin
+        if not handshake and not fin and remote_seq != self.ack_num:
+            print "DEBUG: received an out of order packet " + str(remote_seq) + ". Abandoned."
+            return False, False, fin, push_flag
         message_len = len(raw_packet) - 4 * self.header_length(raw_packet)
         if message_len == 0:
             message_len = 1
@@ -159,10 +163,13 @@ class Tcp(object):
         # if message_len != 1:
         #     self.result += raw_packet[-message_len : ]
         # if fin == 1:
-        #     print self.result
+        #     self.ack()
         #     self.fin()
-        print "DEBUG: received %x, length: %d, fin is %d" % (remote_seq, message_len, fin)
-        return raw_packet[-message_len : ], remote_seq, fin
+        #     if push_flag:
+        #         self.result += raw_packet[-message_len : ]
+
+        # print "DEBUG: received %x, length: %d, fin is %d" % (remote_seq, message_len, fin)
+        return raw_packet[-message_len : ], remote_seq, fin, push_flag
         
 
     # TODO check if the recv_packet is valid. ACK number, checksum.
@@ -192,16 +199,19 @@ class Tcp(object):
         while True:
             # time.sleep(1)
             raw_packet = self.receive()
-            packet, seq, fin = self.process_raw_packet(raw_packet)
-            # if packet == False:
-            #     continue
+            packet, seq, fin, push_flag = self.process_raw_packet(raw_packet)
+            if packet == False:
+                self.ack()
+                continue
             # print "DEBUG: Fin is %d" % (fin)
-            self.result += packet
             if fin == 1:
                 self.ack()
                 self.fin()
+                if push_flag:
+                    self.result += packet
                 break
             else:
+                self.result += packet
                 # print "DEBUG: About to ack %x" % (seq)
                 self.ack()
 
