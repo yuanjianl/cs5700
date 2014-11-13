@@ -4,6 +4,7 @@ from struct import *
 import utilities
 import tcp
 import random
+import time
 
 '''
 IP HEADER
@@ -49,7 +50,7 @@ class Ip(object):
         ip_ver = 4
         ip_tos = 0
         ip_tot_len = 0  # kernel will fill the correct total length
-        ip_id = random.randint(0, 65536)   #Id of this packet
+        ip_id = random.randint(0, 65534)   #Id of this packet
         ip_frag_off = 16384
         ip_ttl = 255
         ip_proto = socket.IPPROTO_TCP
@@ -75,7 +76,10 @@ class Ip(object):
         return raw_packet[20:]
 
     def receive(self, dest_ip, tcp_port):
+        start_time = time.time()
         while True:
+            if time.time() - start_time > 1:
+                raise TimeoutError
             raw_packet = self.recv_sock.recv(65536)
             packet_dest_ip = unpack('!BBBB', raw_packet[16: 20])
             src_ip = utilities.ip_to_tuple(self.local_ip)
