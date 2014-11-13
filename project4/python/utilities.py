@@ -22,8 +22,7 @@ def checksum(msg):
 def getLocalIP(interface="eth1"):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     return socket.inet_ntoa(fcntl.ioctl(sock.fileno(),
-                                        0x8915,  # SIOCGIFADDR
-                                        struct.pack('256s', interface[:15]))[20:24])
+                                        0x8915, struct.pack('256s', interface[:15]))[20:24])
 
 def getLocalMac(interface="eth1"):
     mac_address = commands.getoutput("ifconfig " + interface + " | grep HWaddr | awk '{ print $5 }'")

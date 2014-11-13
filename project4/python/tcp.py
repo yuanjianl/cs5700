@@ -36,7 +36,7 @@ TCP Header
 # to one remote host.
 
 class Tcp(object):
-    MAX_WIN_SIZE = 5840
+    MAX_WIN_SIZE = 65530
 
     def __init__(self, hostname):
         self.ip = ip.Ip()
@@ -274,7 +274,7 @@ class Tcp(object):
                 recv_packet = self.ip.receive(self.dest_ip, self.src_port)
                 if self.is_valid(recv_packet):
                     return recv_packet
-            except TimeoutError:
+            except socket.timeout:
                 print "DEBUG: Haven't received packet for 1 seconds. Sending three acks."
                 self.ack()
                 self.ack()
