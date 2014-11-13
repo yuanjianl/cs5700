@@ -1,5 +1,7 @@
 import socket
 import struct
+import fcntl
+import commands
 
 # checksum functions needed for calculation checksum
 def checksum(msg):
@@ -17,8 +19,23 @@ def checksum(msg):
     return s
 
 # Return the ip address of localhost. Use ifconfig.
-def getLocalIP():
-    return "10.0.3.15"
+def getLocalIP(interface="eth1"):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(sock.fileno(),
+                                        0x8915,  # SIOCGIFADDR
+                                        struct.pack('256s', interface[:15]))[20:24])
+
+def getLocalMac(interface="eth1"):
+    mac_address = commands.getoutput("ifconfig " + interface + " | grep HWaddr | awk '{ print $5 }'")
+    if len( mac_address ) == 17:
+        return mac_address.replace(':', '')
+
+def getGateway():
+    lines = commands.getoutput('route -n').split('\n')
+    for line in lines:
+        record = line.split()
+        if record[0] == '0.0.0.0':
+            return record[1]
 
 def getDestIP(hostname):
     return socket.gethostbyname(hostname)
@@ -26,4 +43,5 @@ def getDestIP(hostname):
 def ip_to_tuple(ip_address):
     result = ip_address.split(".")
     return tuple([int(x) for x in result])
+
 

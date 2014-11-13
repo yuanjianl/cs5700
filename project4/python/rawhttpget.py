@@ -2,6 +2,7 @@ import sys
 import re
 import tcp
 
+
 URL_REGEX = "^(.*:)//([a-z\-.]+)(:[0-9]+)?(.*)$"
 
 class Http(object):
