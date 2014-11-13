@@ -5,6 +5,7 @@ import utilities
 import tcp
 import random
 import time
+from etthernet import EthernetSocket
 
 '''
 IP HEADER
@@ -33,6 +34,9 @@ class Ip(object):
         try:
             self.send_sock = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
             self.recv_sock = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
+            # 
+            # self.sock = EthernetSocket()
+            # 
             self.local_ip = utilities.getLocalIP()
 
             # The TCP list that has sent from this instance. The
@@ -44,12 +48,14 @@ class Ip(object):
             sys.exit()
 
 
-    def build_header(self, dest_ip):
+    def build_header(self, dest_ip, tcp_packet):
         # ip header fields
         ip_ihl = 5
         ip_ver = 4
         ip_tos = 0
-        ip_tot_len = 0  # kernel will fill the correct total length
+        # If we don't overrite etthernet, kernel will fill the 
+        # correct total length
+        ip_tot_len = 12 + len( tcp_packet )
         ip_id = random.randint(0, 65534)   #Id of this packet
         ip_frag_off = 16384
         ip_ttl = 255
@@ -63,14 +69,19 @@ class Ip(object):
         # the ! in the pack format string means we don't care about 
         # what network order it is using. 
         ip_header = pack('!BBHHHBBH4s4s' , ip_ihl_ver, ip_tos, ip_tot_len, ip_id, ip_frag_off, ip_ttl, ip_proto, ip_check, ip_saddr, ip_daddr)
+
+        ip_check = utilities.checksum( ip_header )
+        ip_check = pack('H', ip_check)
+        ip_header = pack('!BBHHHBB' , ip_ihl_ver, ip_tos, ip_tot_len, ip_id, ip_frag_off, ip_ttl, ip_proto) + ip_check + pack('!4s4s', ip_saddr, ip_daddr)
         return ip_header
 
 
     def send(self, dest_ip, tcp_packet):
-        ip_header = self.build_header(dest_ip)
+        ip_header = self.build_header(dest_ip, tcp_packet)
         ip_packet = ip_header + tcp_packet
         
         self.send_sock.sendto(ip_packet, ( dest_ip , 0 )) 
+        # self.sock.send( ip_packet )
 
     def raw_to_tcp_packet(self, raw_packet):
         return raw_packet[20:]
@@ -79,8 +90,9 @@ class Ip(object):
         start_time = time.time()
         while True:
             if time.time() - start_time > 1:
-                raise TimeoutError
-            raw_packet = self.recv_sock.recv(65536)
+                raise socket.timeout
+            raw_packet = self.recv_sock.recv(4096)
+            # raw_packet = self.sock.recv()
             packet_dest_ip = unpack('!BBBB', raw_packet[16: 20])
             src_ip = utilities.ip_to_tuple(self.local_ip)
             if src_ip == packet_dest_ip:
