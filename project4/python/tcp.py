@@ -43,8 +43,10 @@ class Tcp(object):
         self.src_ip = utilities.getLocalIP()
         self.dest_ip = utilities.getDestIP(hostname)
         self.src_port = random.randint(1024, 65530)
+        # self.src_port = 30910
         self.dest_port = 80
         self.seq_num = random.randint(0, 65536 * 65536)
+        # self.seq_num = 5436666
         self.ack_num = 0
         self.c_wind = 1
 
@@ -113,12 +115,11 @@ class Tcp(object):
 
     def verify_checksum(self, raw_packet ):
         pseudo_header = pack('!4s4sBBH',
-                                    socket.inet_aton(self.src_ip),
                                     socket.inet_aton(self.dest_ip),
+                                    socket.inet_aton(self.src_ip),
                                     0,
                                     socket.IPPROTO_TCP,  # Protocol,
                                     len(raw_packet))
-
         return utilities.checksum(pseudo_header + raw_packet) == 0
 
     def syn(self):
@@ -133,9 +134,11 @@ class Tcp(object):
     def receive_syn_ack(self):
         raw_packet = self.receive()
         if self.process_raw_packet(raw_packet, True) == False:
+            print "received a false syn ack"
             self.c_wind = 1
-            return
+            return False
         self.seq_num += 1
+        return True
 
 
     def ack(self):
@@ -162,16 +165,19 @@ class Tcp(object):
         # print "DEBUG: fin is %d" % (fin)
         if remote_seq in self.received_packets:
             print "DEBUG: Packet " + str(remote_seq) + " is duplicated."
+            self.ack()
             return False, False, fin
         if (not handshake) and (not fin) and remote_seq > self.ack_num:
             self.out_of_order_packets[ remote_seq ] = raw_packet;
             # print "DEBUG: received an out of order packet. Put in buffer."
             return False, False, fin, push_flag
         message_len = len(raw_packet) - 4 * self.header_length(raw_packet)
-        if message_len == 0:
+        if handshake:
             message_len = 1
 
         self.ack_num = remote_seq + message_len
+        if fin:
+            self.ack_num = remote_seq + 1
 
         self.received_packets.add(remote_seq)
 
@@ -190,7 +196,10 @@ class Tcp(object):
     # TODO check if the recv_packet is valid. ACK number, checksum.
     def is_valid(self, raw_packet):
         if not self.verify_checksum(raw_packet):
-            return False
+            # self.ack()
+            # self.ack()
+            # self.ack()
+            pass
         remote_seq = int(unpack("!I", raw_packet[4:8])[0])
         remote_ack = int(unpack("!I", raw_packet[8:12])[0])
         if remote_ack in self.expected_packets:
@@ -208,8 +217,10 @@ class Tcp(object):
 
     # Three way handshake.
     def connect_to_server(self):
-        self.syn()
-        self.receive_syn_ack()
+        while True:
+            self.syn()
+            if self.receive_syn_ack():
+                break
         self.ack()
 
     def process_response(self):
@@ -218,14 +229,15 @@ class Tcp(object):
             raw_packet = self.receive()
             packet, seq, fin, push_flag = self.process_raw_packet(raw_packet)
             if packet == False:
-                if time.time() - self.last_acked_time > 1:
-                    print "DEBUG: Time out, sending ack."
-                    self.ack()
+                # if time.time() - self.last_acked_time > 1:
+                #     print "DEBUG: Time out, sending ack."
+                #     self.ack()
                 # self.ack()
                 continue
             # print "DEBUG: Fin is %d" % (fin)
             if fin == 1:
                 self.ack()
+                self.seq_num += 1
                 self.fin()
                 if push_flag:
                     self.result += packet
@@ -236,13 +248,13 @@ class Tcp(object):
 
 
     def send(self, payload):
-        start_time = time.time()
+        self.start_time = time.time()
         # First, connect to remote server.
-        print "Starting three-way-handshake."
+        # print "Starting three-way-handshake."
         self.connect_to_server()
-        print "Finished three-way-handshake."
+        # print "Finished three-way-handshake."
 
-        print "Starting the HTTP request."
+        # print "Starting the HTTP request."
         # Then send the request.
         # print "DEBUG: HTTP request: %s" % ( payload )
         tcp_packet = self.build_header(payload) + payload
@@ -253,12 +265,12 @@ class Tcp(object):
             if self.c_wind < 1000:
                 self.c_wind += 1
         self.seq_num += len(payload)
-        print "Finished the HTTP request."
+        # print "Finished the HTTP request."
         
-        print "Getting response"
+        # print "Getting response"
         # Then process response get get final result.
         result = self.process_response()
-        print "Total time is: " + str(time.time() - start_time) + " seconds."
+        print "Total time is: " + str(time.time() - self.start_time) + " seconds."
 
     def receive_result(self):
         return self.result
@@ -274,9 +286,7 @@ class Tcp(object):
                 recv_packet = self.ip.receive(self.dest_ip, self.src_port)
                 if self.is_valid(recv_packet):
                     return recv_packet
-            except socket.timeout:
-                print "DEBUG: Haven't received packet for 1 seconds. Sending three acks."
-                self.ack()
-                self.ack()
+            except:
+                # print "DEBUG: Haven't received packet for 1 seconds. Sending three acks."
                 self.ack()
                 continue

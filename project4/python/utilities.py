@@ -3,6 +3,8 @@ import struct
 import fcntl
 import commands
 
+INTERFACE = 'eth1'
+
 # checksum functions needed for calculation checksum
 def checksum(msg):
     if len(msg) % 2 == 1:  # the length of msg in bytes is an odd number
@@ -19,12 +21,12 @@ def checksum(msg):
     return s
 
 # Return the ip address of localhost. Use ifconfig.
-def getLocalIP(interface="eth1"):
+def getLocalIP(interface=INTERFACE):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     return socket.inet_ntoa(fcntl.ioctl(sock.fileno(),
                                         0x8915, struct.pack('256s', interface[:15]))[20:24])
 
-def getLocalMac(interface="eth1"):
+def getLocalMac(interface=INTERFACE):
     mac_address = commands.getoutput("ifconfig " + interface + " | grep HWaddr | awk '{ print $5 }'")
     if len( mac_address ) == 17:
         return mac_address.replace(':', '')

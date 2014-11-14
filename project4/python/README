@@ -1,0 +1,22 @@
+We have implemented the extra part of etternet. The source file of extra part can be found in etthernet.py
+
+This is relatively a much more complex assignment than the previous ones. We finished the project in the following steps:
+
+1. Read the requirements and finished the initial design. We decided to put each layer in different files, which will be good to test and extend.
+2. Do the http part. In this part, we basically did similar things to project2. We put a normal socket in tcp.py and build everthing in the application layer in http.py. 
+3. Then we started to do things in transport layer and ip layer. We found that ip header are easier so we did the ip header first. 
+4. After build the ip header. We started on tcp layer. 
+	a) SYN
+	b) Receive SYN ACK from server
+	c) Send ACK
+	d) Send HTTP request
+	e) Receive ACK
+	f) Receive data and send back ACK.
+
+  We did this one by one and step by step. In the meantime, we put the reusable funtions into utilities.py. 
+5. After finishing the basic functionalities, we added the checksum validation, basic congestion control, out-of-order packet handling, duplicatate packet handling and so on.
+6. Finally, we build the etthernet part.
+
+The most challenge part was debugging, cause it is really hard to set breakpoint in network code, luckily we found tcpdump was useful on that.
+
+I wrote a small test.sh file to download 2MB, 10MB and 50MB files with both my code and wget, then compare both with md5sum. 
