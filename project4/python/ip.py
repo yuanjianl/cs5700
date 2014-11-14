@@ -5,7 +5,7 @@ import utilities
 import tcp
 import random
 import time
-from etthernet import EthernetSocket
+from etthernet import Ethernet
 
 '''
 IP HEADER
@@ -32,10 +32,10 @@ class Ip(object):
     def __init__(self):
         #create a raw socket
         try:
-            self.send_sock = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
-            self.recv_sock = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
+            # self.send_sock = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
+            # self.recv_sock = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
             # 
-            # self.sock = EthernetSocket()
+            self.sock = Ethernet()
             # 
             self.local_ip = utilities.getLocalIP()
 
@@ -55,8 +55,9 @@ class Ip(object):
         ip_tos = 0
         # If we don't overrite etthernet, kernel will fill the 
         # correct total length
-        ip_tot_len = 12 + len( tcp_packet )
+        ip_tot_len = 20 + len( tcp_packet )
         ip_id = random.randint(0, 65534)   #Id of this packet
+        # ip_id = 12345
         ip_frag_off = 16384
         ip_ttl = 255
         ip_proto = socket.IPPROTO_TCP
@@ -80,8 +81,8 @@ class Ip(object):
         ip_header = self.build_header(dest_ip, tcp_packet)
         ip_packet = ip_header + tcp_packet
         
-        self.send_sock.sendto(ip_packet, ( dest_ip , 0 )) 
-        # self.sock.send( ip_packet )
+        # self.send_sock.sendto(ip_packet, ( dest_ip , 0 )) 
+        self.sock.send( ip_packet )
 
     def raw_to_tcp_packet(self, raw_packet):
         return raw_packet[20:]
@@ -89,10 +90,13 @@ class Ip(object):
     def receive(self, dest_ip, tcp_port):
         start_time = time.time()
         while True:
-            if time.time() - start_time > 1:
+            if time.time() - start_time > 2:
                 raise socket.timeout
-            raw_packet = self.recv_sock.recv(4096)
-            # raw_packet = self.sock.recv()
+            # raw_packet = self.recv_sock.recv(4096)
+            try :
+                raw_packet = self.sock.recv()
+            except :
+                continue
             packet_dest_ip = unpack('!BBBB', raw_packet[16: 20])
             src_ip = utilities.ip_to_tuple(self.local_ip)
             if src_ip == packet_dest_ip:
