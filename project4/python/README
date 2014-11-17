@@ -22,4 +22,7 @@ The most challenge part was debugging, cause it is really hard to set breakpoint
 I wrote a small test.sh file to download 2MB, 10MB and 50MB files with both my code and wget, then compare both with md5sum. 
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> fd87d5f20973e650f3d7878d277eee60c7d7684b
