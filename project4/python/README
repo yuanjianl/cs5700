@@ -20,3 +20,5 @@ This is relatively a much more complex assignment than the previous ones. We fin
 The most challenge part was debugging, cause it is really hard to set breakpoint in network code, luckily we found tcpdump was useful on that.
 
 I wrote a small test.sh file to download 2MB, 10MB and 50MB files with both my code and wget, then compare both with md5sum. 
+
+
