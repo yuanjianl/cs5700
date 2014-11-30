@@ -75,7 +75,10 @@ class MyDNSHandler(SocketServer.BaseRequestHandler):
 def select_best_replica( client_address ):
     return "54.174.6.90"
 
-
+# Put a datagram socket into this class also to send and receive
+# request to map.py. map.py should be a server running on the same
+# host ( on a different port ) and handle the latency of clients and 
+# replicas. 
 class DNSServer( SocketServer.UDPServer ):
     def __init__( self, name, port, handler = MyDNSHandler):
         self.name = name
