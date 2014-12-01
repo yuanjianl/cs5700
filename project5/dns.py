@@ -2,6 +2,8 @@ import sys
 import SocketServer
 import struct
 import socket
+import json
+import constants
 
 class Packet():
     def buildPacket( self, ip ):
@@ -71,6 +73,19 @@ class MyDNSHandler(SocketServer.BaseRequestHandler):
             response = packet.buildPacket( ip )
 
             sock.sendto(response, self.client_address)
+            self.server.mapContacter.addClient( self.client_address )
+
+class MapContacter:
+    def __init__( self ):
+        self.UDP_IP = "127.0.0.1"
+        self.UDP_PORT = constants.UDP_PORT
+
+        self.sock = socket.socket(socket.AF_INET, # Internet 
+                                socket.SOCK_DGRAM) # UDP
+
+    def addClient( self, client_ip ):
+        data = json.dumps( {constants._DNS : client_ip[ 0 ]} )
+        self.sock.sendto( data, ( self.UDP_IP, self.UDP_PORT ) )
 
 def select_best_replica( client_address ):
     return "54.174.6.90"
@@ -83,6 +98,8 @@ class DNSServer( SocketServer.UDPServer ):
     def __init__( self, name, port, handler = MyDNSHandler):
         self.name = name
         SocketServer.UDPServer.__init__(self, ( '', port ), handler)
+
+        self.mapContacter = MapContacter()
         return
 
 def getPortAndName( argv ):
