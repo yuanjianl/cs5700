@@ -26,7 +26,7 @@ class MyHTTPHandler(BaseHTTPRequestHandler):
 				self.download_from_origin(self.path, response)
 
 		# Read cached file from local file
-		with open(os.pardir + self.path) as request_page:
+		with open(os.getcwd() + self.path) as request_page:
 			self.send_response(200)
 			self.send_header('Content-type', 'text/plain')
 			self.end_headers()
@@ -35,9 +35,8 @@ class MyHTTPHandler(BaseHTTPRequestHandler):
 		# Update the cache using LRU
 
 	def download_from_origin(self, path, response):
-		filename = os.pardir + path
+		filename = os.getcwd() + self.path
 		directory = os.path.dirname(filename)
-		print filename
 		
 		if not os.path.exists(directory):
 			os.makedirs(directory)
