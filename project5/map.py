@@ -13,11 +13,13 @@ import constants
 
 PROPERTIES_FILE = "MAP_PROPERTIES"
 
+DEFAULT_REPLICA = "54.174.6.90"
+
 class Map:
 
-    def __init__( self ):
+    def __init__( self , port ):
         self.UDP_IP = "127.0.0.1"
-        self.UDP_PORT = constants.UDP_PORT
+        self.UDP_PORT = port
 
         self.client_mappings = {}
 
@@ -33,26 +35,51 @@ class Map:
         #     print "Socket is already in used."
 
     def addClient( self, client_ip ):
-        print "received message from DNS: ", client_ip
+        if not self.client_mappings.has_key( client_ip ):
+            # TODO Actually, should use longest prefix match maybe?
+            self.client_mappings[ client_ip ] = DEFAULT_REPLICA
+
+    def selectReplica( self, client_ip ):
+        # Do whatever we need to select a best replica server
+        # for the client_ip.
+        if self.client_mappings.has_key( client_ip ):
+            replica = self.client_mapping[ client_ip ]
+        else :
+            replica = DEFAULT_REPLICA
+        packet = json.dumps( {constants._DNS : 
+                                    {"TYPE" : constants._OK, 
+                                     "CONTENT": replica
+                                    } 
+                            } )
+
+        return packet
+
+
 
     def updateClientList( self, client_list ):
         print "received message from replica: ", client_list
 
     def run( self ):
         while True:
-            data, addr = self.sock.recvfrom(1024) # buffer size is 1024 bytes
-            message = json.loads( data )
+            packet, addr = self.sock.recvfrom(1024) # buffer size is 1024 bytes
+            message = json.loads( packet )
+
             if message.has_key( constants._DNS ):
-                self.addClient( message[ constants._DNS ] );
+                data = message[ constants._DNS ]
+                if data[ "TYPE" ] == constants._PUT_CLIENT:
+                    self.addClient( data[ "CONTENT" ] )
+                elif data[ "TYPE" ] == constants._GET_REPLICA:
+                    packet = self.selectReplica( data[ "CONTENT" ] )
+                    self.sock.sendto( packet, addr )
             elif message.has_key( constants._REPLICA ):
                 self.updateClientList( message[ constants._REPLICA ])
             else :
                 print "received message from unknow: ", message
 
 def main(argv):
-    map = Map()
+    map = Map( int(argv[0]) )
     map.bind()
     map.run()
 
 if __name__ == '__main__':
-    main(sys.argv)
+    main(sys.argv[1:])

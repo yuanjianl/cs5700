@@ -69,26 +69,48 @@ class MyDNSHandler(SocketServer.BaseRequestHandler):
         
         if packet.q_type == 1 and packet.q_name == self.server.name:
             print "DEBUG: Should reply to: " + str(self.client_address)
-            ip = select_best_replica( self.client_address )
+            ip = self.server.mapContacter.select_best_replica( self.client_address )
             response = packet.buildPacket( ip )
 
             sock.sendto(response, self.client_address)
             self.server.mapContacter.addClient( self.client_address )
 
 class MapContacter:
-    def __init__( self ):
+    def __init__( self, port ):
         self.UDP_IP = "127.0.0.1"
-        self.UDP_PORT = constants.UDP_PORT
+        self.UDP_PORT = port
 
         self.sock = socket.socket(socket.AF_INET, # Internet 
                                 socket.SOCK_DGRAM) # UDP
 
+        # We don't want the socket to be blocked.
+        self.sock.setblocking( 0 )
+
     def addClient( self, client_ip ):
-        data = json.dumps( {constants._DNS : client_ip[ 0 ]} )
+        data = json.dumps( {constants._DNS : 
+                                    {"TYPE" : constants._PUT_CLIENT, 
+                                     "CONTENT": client_ip[ 0 ]  #IP only.
+                                    } 
+                            } )
         self.sock.sendto( data, ( self.UDP_IP, self.UDP_PORT ) )
 
-def select_best_replica( client_address ):
-    return "54.174.6.90"
+    def select_best_replica( self, client_ip ):
+        try: 
+            data = json.dumps( {constants._DNS : 
+                                        {"TYPE" : constants._GET_REPLICA, 
+                                         "CONTENT": client_ip[ 0 ]  #IP only.
+                                        } 
+                                } )
+            self.sock.sendto( data, ( self.UDP_IP, self.UDP_PORT ) )
+
+            packet, addr = self.sock.recvfrom(1024) # buffer size is 1024 bytes
+            data = json.loads( packet )
+
+            if data.has_key( constants._DNS ) and data[ constants._DNS ][ "TYPE" ] == constants._OK:
+                return data[ constants._DNS ][ "CONTENT" ]
+        except socket.error:
+            # default replica.
+            return "1.1.1.1"
 
 # Put a datagram socket into this class also to send and receive
 # request to map.py. map.py should be a server running on the same
@@ -99,7 +121,7 @@ class DNSServer( SocketServer.UDPServer ):
         self.name = name
         SocketServer.UDPServer.__init__(self, ( '', port ), handler)
 
-        self.mapContacter = MapContacter()
+        self.mapContacter = MapContacter( port + 2 )
         return
 
 def getPortAndName( argv ):
