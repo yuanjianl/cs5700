@@ -24,7 +24,53 @@ ec2-54-66-212-131.ap-southeast-2.compute.amazonaws.com  Syndey, Australia
 ec2-54-94-156-232.sa-east-1.compute.amazonaws.com   Sao Paulo, Brazil
 '''
 
+replicas = ['54.174.6.90', '54.149.9.25', '54.67.86.61', 
+            '54.72.167.104', '54.93.182.67', '54.169.146.226',
+            '54.65.104.220', '54.66.212.131', '54.94.156.232']
+
 DEFAULT_REPLICA = "54.94.156.232"
+
+# Match the prefix of part1 and part2.
+def match( part1, part2 ):
+    bitArray1 = []
+    bitArray2 = []
+    for i in range( 8 ):
+        base = 128 / ( 2 ** i )
+        bitArray1.append( part1 / base )
+        part1 = part1 % base
+        bitArray2.append( part2 / base )
+        part2 = part2 % base
+    result = 0
+    for index in range( len( bitArray1 ) ):
+        if bitArray1[ index ] == bitArray2[ index ]:
+            result += 1
+        else :
+            break
+    return result
+
+def prefixMatch( ip1, ip2 ):
+    ip1 = ip1.split('.')
+    ip2 = ip2.split('.')
+    if len( ip1 ) !=  len( ip2 ):
+        return 0
+    else :
+        result = 0
+        for index in range( len( ip1 ) ):
+            matchResult = match( int(ip1[ index ]), int(ip2[ index ]) )
+            result += matchResult
+            if matchResult != 8:
+                break
+        return result
+
+def longestPrefixMatch( client_ip, ip_list ):
+    result = 0
+    result_ip = DEFAULT_REPLICA
+    for server_ip in ip_list:
+        prefixResult = prefixMatch ( client_ip, server_ip )
+        if result < prefixResult:
+            result = prefixResult
+            result_ip = server_ip
+    return result_ip
 
 class Map:
 
@@ -48,7 +94,8 @@ class Map:
     def addClient( self, client_ip ):
         if not self.client_mappings.has_key( client_ip ):
             # TODO Actually, should use longest prefix match maybe?
-            self.client_mappings[ client_ip ] = [ 10000, DEFAULT_REPLICA ]
+            replica = longestPrefixMatch( client_ip, replicas )
+            self.client_mappings[ client_ip ] = [ 10000, replica ]
 
     def selectReplica( self, client_ip ):
         # Do whatever we need to select a best replica server
@@ -58,7 +105,8 @@ class Map:
         if self.client_mappings.has_key( client_ip ):
             replica = self.client_mappings[ client_ip ][1]
         else :
-            replica = DEFAULT_REPLICA
+            replica = longestPrefixMatch( client_ip, replicas )
+            self.client_mappings[ client_ip ] = [ 10000, replica ]
         packet = json.dumps( {constants._DNS : 
                                     {"TYPE" : constants._OK, 
                                      "CONTENT": replica
