@@ -11,14 +11,12 @@ import constants
 #   new request, it should inform this class.
 # 3. Maintain a map data structure of client: replica_ip pairs.
 
-PROPERTIES_FILE = "MAP_PROPERTIES"
-
 DEFAULT_REPLICA = "54.174.6.90"
 
 class Map:
 
     def __init__( self , port ):
-        self.UDP_IP = "127.0.0.1"
+        self.UDP_IP = constants.UDP_IP
         self.UDP_PORT = port
 
         self.client_mappings = {}
@@ -43,7 +41,7 @@ class Map:
         # Do whatever we need to select a best replica server
         # for the client_ip.
         if self.client_mappings.has_key( client_ip ):
-            replica = self.client_mapping[ client_ip ]
+            replica = self.client_mappings[ client_ip ]
         else :
             replica = DEFAULT_REPLICA
         packet = json.dumps( {constants._DNS : 
@@ -54,7 +52,15 @@ class Map:
 
         return packet
 
-
+    def listClients( self ):
+        # print "PREPARING to list clients."
+        clients = self.client_mappings.keys()
+        packet = json.dumps( {constants._REPLICA : 
+                            {"TYPE" : constants._OK, 
+                             "CONTENT": clients
+                            } 
+                    } )
+        return packet
 
     def updateClientList( self, client_list ):
         print "received message from replica: ", client_list
@@ -72,7 +78,14 @@ class Map:
                     packet = self.selectReplica( data[ "CONTENT" ] )
                     self.sock.sendto( packet, addr )
             elif message.has_key( constants._REPLICA ):
-                self.updateClientList( message[ constants._REPLICA ])
+                # print "RECEIVING message from Replica."
+                data = message[ constants._REPLICA ]
+                if data[ "TYPE" ] == constants._LIST_CLIENTS:
+                    packet = self.listClients()
+                    self.sock.sendto( packet, addr )
+                elif data[ "TYPE" ] == constants._UPDATE_CLIENTS:
+                    packet = self.updateClientList( data[ "CONTENT" ] )
+                    self.sock.sendto( packet, addr )
             else :
                 print "received message from unknow: ", message
 
