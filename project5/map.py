@@ -11,7 +11,20 @@ import constants
 #   new request, it should inform this class.
 # 3. Maintain a map data structure of client: replica_ip pairs.
 
-DEFAULT_REPLICA = "54.174.6.90"
+'''
+ec2-54-164-51-70.compute-1.amazonaws.com    Origin server (running Web server on port 8080)
+ec2-54-174-6-90.compute-1.amazonaws.com     N. Virginia
+ec2-54-149-9-25.us-west-2.compute.amazonaws.com Oregon
+ec2-54-67-86-61.us-west-1.compute.amazonaws.com N. California
+ec2-54-72-167-104.eu-west-1.compute.amazonaws.com   Ireland
+ec2-54-93-182-67.eu-central-1.compute.amazonaws.com Frankfurt, Germany
+ec2-54-169-146-226.ap-southeast-1.compute.amazonaws.com Singapore
+ec2-54-65-104-220.ap-northeast-1.compute.amazonaws.com  Tokyo, Japan
+ec2-54-66-212-131.ap-southeast-2.compute.amazonaws.com  Syndey, Australia
+ec2-54-94-156-232.sa-east-1.compute.amazonaws.com   Sao Paulo, Brazil
+'''
+
+DEFAULT_REPLICA = "54.94.156.232"
 
 class Map:
 
@@ -35,13 +48,15 @@ class Map:
     def addClient( self, client_ip ):
         if not self.client_mappings.has_key( client_ip ):
             # TODO Actually, should use longest prefix match maybe?
-            self.client_mappings[ client_ip ] = DEFAULT_REPLICA
+            self.client_mappings[ client_ip ] = [ 10000, DEFAULT_REPLICA ]
 
     def selectReplica( self, client_ip ):
         # Do whatever we need to select a best replica server
         # for the client_ip.
+        print client_ip + " is requesting."
+        print self.client_mappings
         if self.client_mappings.has_key( client_ip ):
-            replica = self.client_mappings[ client_ip ]
+            replica = self.client_mappings[ client_ip ][1]
         else :
             replica = DEFAULT_REPLICA
         packet = json.dumps( {constants._DNS : 
@@ -62,8 +77,22 @@ class Map:
                     } )
         return packet
 
-    def updateClientList( self, client_list ):
-        print "received message from replica: ", client_list
+    def updateClientList( self, client_list, replica_ip ):
+        packet = json.dumps( {constants._REPLICA : 
+                    {"TYPE" : constants._OK
+                    } 
+            } )
+
+        if client_list != None:
+            for client in client_list.keys():
+                if self.client_mappings.has_key( client ):
+                    if self.client_mappings[ client ][ 0 ] > client_list[ client ]:
+                        self.client_mappings[ client ][ 0 ] = client_list[ client ]
+                        self.client_mappings[ client ][ 1 ] = replica_ip
+                else :
+                    self.client_mappings[ client ] = [ client_list[ client ], replica_ip ]
+
+        return packet
 
     def run( self ):
         while True:
@@ -84,7 +113,7 @@ class Map:
                     packet = self.listClients()
                     self.sock.sendto( packet, addr )
                 elif data[ "TYPE" ] == constants._UPDATE_CLIENTS:
-                    packet = self.updateClientList( data[ "CONTENT" ] )
+                    packet = self.updateClientList( data[ "CONTENT" ], addr[ 0 ] )
                     self.sock.sendto( packet, addr )
             else :
                 print "received message from unknow: ", message

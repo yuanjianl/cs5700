@@ -51,7 +51,7 @@ class Packet():
             temp.append(s[ ptr:ptr + count])
             ptr += count
         self.q_name = '.'.join(temp)
-        print "DEBUG: " + self.q_name
+        # print "DEBUG: " + self.q_name
 
 class MyDNSHandler(SocketServer.BaseRequestHandler):
     """
@@ -68,7 +68,7 @@ class MyDNSHandler(SocketServer.BaseRequestHandler):
         packet.unpackPacket(data)
         
         if packet.q_type == 1 and packet.q_name == self.server.name:
-            print "DEBUG: Should reply to: " + str(self.client_address)
+            # print "DEBUG: Should reply to: " + str(self.client_address)
             ip = self.server.mapContacter.select_best_replica( self.client_address )
             response = packet.buildPacket( ip )
 
