@@ -77,7 +77,7 @@ class MyDNSHandler(SocketServer.BaseRequestHandler):
 
 class MapContacter:
     def __init__( self, port ):
-        self.UDP_IP = "127.0.0.1"
+        self.UDP_IP = constants.UDP_IP
         self.UDP_PORT = port
 
         self.sock = socket.socket(socket.AF_INET, # Internet 
@@ -87,21 +87,21 @@ class MapContacter:
         self.sock.setblocking( 0 )
 
     def addClient( self, client_ip ):
-        data = json.dumps( {constants._DNS : 
+        packet = json.dumps( {constants._DNS : 
                                     {"TYPE" : constants._PUT_CLIENT, 
                                      "CONTENT": client_ip[ 0 ]  #IP only.
                                     } 
                             } )
-        self.sock.sendto( data, ( self.UDP_IP, self.UDP_PORT ) )
+        self.sock.sendto( packet, ( self.UDP_IP, self.UDP_PORT ) )
 
     def select_best_replica( self, client_ip ):
         try: 
-            data = json.dumps( {constants._DNS : 
+            packet = json.dumps( {constants._DNS : 
                                         {"TYPE" : constants._GET_REPLICA, 
                                          "CONTENT": client_ip[ 0 ]  #IP only.
                                         } 
                                 } )
-            self.sock.sendto( data, ( self.UDP_IP, self.UDP_PORT ) )
+            self.sock.sendto( packet, ( self.UDP_IP, self.UDP_PORT ) )
 
             packet, addr = self.sock.recvfrom(1024) # buffer size is 1024 bytes
             data = json.loads( packet )
@@ -110,6 +110,7 @@ class MapContacter:
                 return data[ constants._DNS ][ "CONTENT" ]
         except socket.error:
             # default replica.
+            print "TIMEOUT: replying with default replica."
             return "1.1.1.1"
 
 # Put a datagram socket into this class also to send and receive
