@@ -1,0 +1,2 @@
+python pinger.py 50001 &  
+./httpserver -p 49999 -o ec2-54-164-51-70.compute-1.amazonaws.com
