@@ -75,7 +75,7 @@ def longestPrefixMatch( client_ip, ip_list ):
 class Map:
 
     def __init__( self , port ):
-        self.UDP_IP = constants.UDP_IP
+        self.UDP_IP = socket.gethostbyname( constants.UDP_IP )
         self.UDP_PORT = port
 
         self.client_mappings = {}
@@ -106,7 +106,6 @@ class Map:
             replica = self.client_mappings[ client_ip ][1]
         else :
             replica = longestPrefixMatch( client_ip, replicas )
-            self.client_mappings[ client_ip ] = [ 10000, replica ]
         packet = json.dumps( {constants._DNS : 
                                     {"TYPE" : constants._OK, 
                                      "CONTENT": replica
