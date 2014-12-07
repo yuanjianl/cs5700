@@ -1,0 +1,1 @@
+dig @cs5700cdnproject.ccs.neu.edu -p 49999 cs5700cdn.example.com

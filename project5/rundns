@@ -1,0 +1,2 @@
+python map.py 50001 &
+./dnsserver -p 49999 -n cs5700cdn.example.com
