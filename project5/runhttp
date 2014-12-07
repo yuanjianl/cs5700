@@ -13,4 +13,4 @@ while getopts "u:i:p::o::n::" opt; do
 done
 
 python pinger.py $((port+2)) &  
-./httpserver -p $port -o $origin
+./httpserver -p $port -o $origin &

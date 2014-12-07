@@ -17,4 +17,4 @@ done
 # echo $name
 
 python map.py $((port+2)) &
-./dnsserver -p $port -n $name
+./dnsserver -p $port -n $name &
