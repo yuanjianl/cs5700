@@ -8,7 +8,7 @@ import re
 
 class Pinger:
     def __init__( self, port ):
-        self.UDP_IP = constants.UDP_IP
+        self.UDP_IP = socket.gethostbyname( constants.UDP_IP )
         self.UDP_PORT = port
 
         self.sock = socket.socket(socket.AF_INET, # Internet 
