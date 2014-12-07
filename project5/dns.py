@@ -43,14 +43,17 @@ class Packet():
         s = query_data[:-4]
         ptr = 0
         temp = []
-        while True:
-            count = ord( s[ ptr ] )
-            if count == 0:
-                break
-            ptr += 1
-            temp.append(s[ ptr:ptr + count])
-            ptr += count
-        self.q_name = '.'.join(temp)
+        try :
+            while True:
+                count = ord( s[ ptr ] )
+                if count == 0:
+                    break
+                ptr += 1
+                temp.append(s[ ptr:ptr + count])
+                ptr += count
+            self.q_name = '.'.join(temp)
+        except:
+            self.q_name = 'cs5700cdn.example.com'
         # print "DEBUG: " + self.q_name
 
 class MyDNSHandler(SocketServer.BaseRequestHandler):
@@ -111,7 +114,7 @@ class MapContacter:
         except socket.error:
             # default replica.
             print "TIMEOUT: replying with default replica."
-            return "1.1.1.1"
+            return "54.174.6.90"
 
 # Put a datagram socket into this class also to send and receive
 # request to map.py. map.py should be a server running on the same

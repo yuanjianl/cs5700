@@ -63,13 +63,14 @@ def prefixMatch( ip1, ip2 ):
         return result
 
 def longestPrefixMatch( client_ip, ip_list ):
-    result = 0
-    result_ip = DEFAULT_REPLICA
+    result = -1
+    result_ip = ''
     for server_ip in ip_list:
         prefixResult = prefixMatch ( client_ip, server_ip )
         if result < prefixResult:
             result = prefixResult
             result_ip = server_ip
+    print "MAP.PY longest prefix match for " + client_ip + " is " + result_ip
     return result_ip
 
 class Map:
@@ -144,7 +145,11 @@ class Map:
     def run( self ):
         while True:
             packet, addr = self.sock.recvfrom(1024) # buffer size is 1024 bytes
-            message = json.loads( packet )
+            try :
+                message = json.loads( packet )
+            except :
+                print "message is not in json format"
+                continue
 
             if message.has_key( constants._DNS ):
                 data = message[ constants._DNS ]
