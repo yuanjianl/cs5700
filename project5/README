@@ -1,0 +1,50 @@
+In DNS Server and each of the replicas, there are two process running. In DNS Server,
+dns.py and map.py is running. dns.py is handling all DNS request, map.py is the one
+that has the information of which replica is the best for a given client ip. In 
+Replica server, httpserver.py is handling all http request, and pinger.py periodically
+pings the clients and pass the information to map.py in DNS server.
+
+The CDN architecture is drawed as the following. It also has the work flow of the CDN
+including the client requests.
+
+The diagram is an ascii art. Please open it with the width of editor set to at least
+90
+-------------------------------------------------------------------------------------
+|             DNS Server                  ||                 REPLICAS              |
+|      dns.py      |        map.py        ||      pinger.py       |  httpserver.py |
+|  ^  |      (2) Best replica             ||                      | |    ^  |   ^  |
+|  |  |     -------------->               ||                      | | (7)|  |(6)|  |
+|  |  |       for client A        (a) List clients    |---------| | |    |  |   |  |
+|  |  |            |             <--------------------| Measure | | |    |  |   |  |
+|  |  |            |                      ||          |  every  | | |    |  |   |  |
+|  |  |            |              (b) OK, Client List |    2    | | |    | \|/  |  |
+|  |  |      (3) Replica IP      -------------------->| seconds | | | |-------| |  |
+|  |  |     <--------------               ||          |---------| | | | cache | |  |
+|  |  |            |                      ||             ^   |    | | |  or   | |  |
+|  |  |            |                      ||             |   |    | | |origin | |  |
+|  |  |            |                      ||             |   |    | | |-------| |  |
+|  |  |            |              (e) Measuremnt         |   |    | |           |  |
+|  |  |            |             <-------------------    |   |    | |           |  |
+|  |  |            |                   Result            |   |    | |           |  |
+|  |  |            |                      ||             |   |    | |           |  |
+|  |  |            |                      ||             |   |    | |           |  |
+|  |  |            |                      ||             |   |    | |           |  |
+|  |  |            |             (f)      OK             |   |    | |           |  |
+|  |  |            |             ------------------>     |   |    | |           |  |
+|  |  |            |                      ||             |   |    | |           |  |
+|  |  |            |                      ||             |   |    | |           |  |
+|  |  |            |                      ||             |   |    | |           |  |
+|  |  |            |                      ||             |   |    | |           |  |
+|  |  |            |                      ||             |   |    | |           |  |
+|  |  |            |                      ||   (d) RTT   |   |    | |           |  |
+|  |  |                                  -----------------   |      |           |  | 
+|  |  |                                  |      (c) ping     |      |           |  | 
+|  |  |                                  |  -----------------|      |           |  | 
+|  |  |(4) DNS Response                  |  |  (8) content          |           |  | 
+|  |  |--------------------------------- |  | ----------------------|           |  |  
+|  |                                   | | \|/|                                 |  |
+|  |  (1) DNS Request                 \|/    \|/   (5) wget content from        |  | 
+|   ---------------------------------  Client A---------------------------------   |
+|                                                            Replica               |
+|                                                                                  |
+|----------------------------------------------------------------------------------|
