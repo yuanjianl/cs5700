@@ -1,3 +1,6 @@
+
+
+
 In DNS Server and each of the replicas, there are two process running. In DNS Server,
 dns.py and map.py is running. dns.py is handling all DNS request, map.py is the one
 that has the information of which replica is the best for a given client ip. In 
@@ -48,3 +51,21 @@ The diagram is an ascii art. Please open it with the width of editor set to at l
 |                                                            Replica               |
 |                                                                                  |
 |----------------------------------------------------------------------------------|
+
+
+Measurement:
+We are using the active measument. Once a client has sent a DNS request to DNS server,
+ the map.py will remember the ip of the client. Periodically, pinger.py in each 
+replica server would get the current client list from map.py, ping each of them to 
+get RTT, then sending it back. In map.py, if the new RTT is smaller than current,
+ map the client to the new Replica. The reason we put the map.py to DNS server is
+that we try to take advantage of no memory limit on DNS server. In replicas, we are
+trying to cache as much as possible ( lesss than 10MB limit of course ).
+
+Cache:
+We are using the LFU cache replacement strategy. And we also did a small trick to 
+speedup the server response: in deployCDN, we put a script to secretely download 
+all potential contents. In this way, once the clients start to request, there 
+already are some pages there.
+
+
