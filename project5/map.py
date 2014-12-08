@@ -2,6 +2,7 @@ import socket
 import sys
 import json
 import constants
+import random
 
 # This class uses a udp socket to handle the traffic. It has the 
 # following responsibilities:
@@ -70,7 +71,10 @@ def longestPrefixMatch( client_ip, ip_list ):
         if result < prefixResult:
             result = prefixResult
             result_ip = server_ip
-    print "MAP.PY longest prefix match for " + client_ip + " is " + result_ip
+    # print "MAP.PY longest prefix match for " + client_ip + " is " + result_ip
+    if result == 0:
+        result_ip = replicas[ random.randint( 0, len( replicas ) - 1 ) ]
+        # print "Random: " + result_ip
     return result_ip
 
 class Map:
@@ -101,8 +105,8 @@ class Map:
     def selectReplica( self, client_ip ):
         # Do whatever we need to select a best replica server
         # for the client_ip.
-        print client_ip + " is requesting."
-        print self.client_mappings
+        # print client_ip + " is requesting."
+        # print self.client_mappings
         if self.client_mappings.has_key( client_ip ):
             replica = self.client_mappings[ client_ip ][1]
         else :
