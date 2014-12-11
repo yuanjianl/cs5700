@@ -36,6 +36,7 @@ for host in "${hosts[@]}"
 do
     echo "--------------------"
     echo "Running" $host
+    ssh -i $keyfile $username@$host 'nohup killall python > /dev/null 2>&1 &'
     ssh -i $keyfile $username@$host "cd ~/CDN/; chmod 700 runhttp; nohup ./runhttp -p $port -o $origin > /dev/null 2>&1 & "
 done
 

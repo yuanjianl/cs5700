@@ -27,11 +27,11 @@ for host in "${hosts[@]}"
 do
     echo "--------------------"
     echo "Stopping" $host
-    ssh -i $keyfile $username@$host 'killall python'
+    ssh -i $keyfile $username@$host 'killall python > /dev/null 2>&1 &'
 done
 
 dnsserver=cs5700cdnproject.ccs.neu.edu
 echo "--------------------"
 echo "Stopping " $dnsserver
-ssh -i $keyfile $username@$host 'killall python'
+ssh -i $keyfile $username@$host 'killall python > /dev/null 2>&1 &'
 

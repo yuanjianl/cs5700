@@ -64,7 +64,7 @@ class MyDNSHandler(SocketServer.BaseRequestHandler):
     client.
     """
     def handle(self):
-        data = self.request[0].strip()
+        data = self.request[0]
         sock = self.request[1]
 
         packet = Packet()

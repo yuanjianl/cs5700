@@ -36,6 +36,9 @@ do
     scp -i $keyfile httpserver $username@$host:~/CDN/
     scp -i $keyfile httpserver.py $username@$host:~/CDN/
     scp -i $keyfile runhttp $username@$host:~/CDN/
+    scp -i $keyfile initcache $username@$host:~/CDN/
+    scp -i $keyfile initCache.py $username@$host:~/CDN/
+    ssh -i $keyfile $username@$host 'cd ~/CDN/; chmod 700 initcache; nohup ./initcache > /dev/null 2>&1 & '
 done
 
 dnsserver=cs5700cdnproject.ccs.neu.edu
