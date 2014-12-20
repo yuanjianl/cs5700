@@ -33,9 +33,10 @@ pings the clients and pass the information to map.py in DNS server.
 The CDN architecture is drawed as the following. It also has the work flow of the CDN
 including the client requests.
 
-The diagram is an ascii art. Please open it with the width of editor set to at least
-90
+The diagram is an ascii art. Please open it with the width of editor set to at least 90
+
 -------------------------------------------------------------------------------------
+<pre>
 |             DNS Server                  ||                 REPLICAS              |
 |      dns.py      |        map.py        ||      pinger.py       |  httpserver.py |
 |  ^  |      (2) Best replica             ||                      | |    ^  |   ^  |
@@ -74,7 +75,7 @@ The diagram is an ascii art. Please open it with the width of editor set to at l
 |                                                            Replica               |
 |                                                                                  |
 |----------------------------------------------------------------------------------|
-
+</pre>
 
 Measurement:
 We are using the active measument. Once a client has sent a DNS request to DNS server,
